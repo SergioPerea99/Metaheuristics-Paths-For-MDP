@@ -5,6 +5,8 @@
  */
 package meta_pr01;
 
+import java.util.HashSet;
+
 /**
  *
  * @author spdlc
@@ -15,18 +17,17 @@ public class META_PR01 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Configurador config = new Configurador(args[0]);
-        ArchivoDatos archivo = new ArchivoDatos(config.getArchivos().get(0));
+        Greedy greedy = new Greedy(args);
         
-        //Comprobamos que funciona:
-        System.out.println(config.getArchivos());
+        //Comprobación de que funciona el insertar el elemento aleatorio 
+        //y que desaparece del hashSet de elementos no candidatos.
+        HashSet<Integer> solucionGreedy = greedy.algoritmoGreedy();
         
-        /*
-        for (int i = 0; i < archivo.getMatrizDatos().length; i++){
-            for(int j=0; j < archivo.getMatrizDatos().length; j++)
-                System.out.print(archivo.getMatrizDatos()[i][j] + " ");
-            System.out.println("");
-        }*/
+        greedy.algoritmoGreedy();
+        
+        
+        System.out.println(greedy.getM());
+        System.out.println(greedy.costeSolucion());
     }
     
 }

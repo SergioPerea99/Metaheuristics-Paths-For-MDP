@@ -1,4 +1,4 @@
 Archivos=GKD-c_1_n500_m50.txt
 Algoritmos=Greedy
-Semillas=12345
-ParametroExtra=1
+Semillas=77433569
+MaximoIteraciones=50000

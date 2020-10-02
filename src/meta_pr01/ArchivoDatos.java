@@ -15,6 +15,8 @@ import java.io.FileReader;
 public class ArchivoDatos {
     private String nombre; //Para saber de que fichero es la matriz.
     private float matrizDatos[][];
+    private int tamMatriz;
+    private int tamSolucion;
     
     public ArchivoDatos(String ruta_archivo){     
        
@@ -29,8 +31,8 @@ public class ArchivoDatos {
             linea = b.readLine();
             String[] split = linea.split(" ");
             
-            Integer tamMatriz = Integer.parseInt(split[0]); //Coge el primer numero leido para el valor de filas y columnas.
-            Integer tamVector = Integer.parseInt(split[1]);
+            tamMatriz = Integer.parseInt(split[0]); //Coge el primer numero leido para el valor de filas y columnas.
+            tamSolucion = Integer.parseInt(split[1]);
             
             matrizDatos = new float[tamMatriz][tamMatriz];
             
@@ -42,7 +44,9 @@ public class ArchivoDatos {
                int columna = Integer.parseInt(rellenoMatriz[1]);
                //Por si acaso hay varios espacios vacios entre los datos.
                try{
+                    //Prefiero NO rellenar la matriz de forma simétrica, para evitar futuras complicaciones.
                     matrizDatos[fila][columna] =  Float.parseFloat(rellenoMatriz[2]);
+                    //matrizDatos[columna][fila] =  Float.parseFloat(rellenoMatriz[2]);
                }catch(NumberFormatException ex){
                    ++errores;
                }
@@ -66,6 +70,20 @@ public class ArchivoDatos {
      */
     public float[][] getMatrizDatos() {
         return matrizDatos;
+    }
+
+    /**
+     * @return the tamMatriz
+     */
+    public int getTamMatriz() {
+        return tamMatriz;
+    }
+
+    /**
+     * @return the tamSolucion
+     */
+    public int getTamSolucion() {
+        return tamSolucion;
     }
     
     

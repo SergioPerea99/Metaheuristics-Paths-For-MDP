@@ -57,7 +57,7 @@ public class Configurador {
                             semillas.add(Long.parseLong(vSemillas[i]));
                         break;
                     
-                    case "ParametroExtra":
+                    case "MaximoIteraciones":
                         parametroExtra = Integer.parseInt(split[1]);
                         break;
                     
