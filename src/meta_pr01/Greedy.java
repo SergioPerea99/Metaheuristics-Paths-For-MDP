@@ -6,7 +6,7 @@
 package meta_pr01;
 
 import java.util.HashSet;
-import java.util.Random;
+//import java.util.Random;
 
 
 /**
@@ -15,9 +15,6 @@ import java.util.Random;
  */
 public class Greedy extends Algoritmo{
 
-    //private HashSet<Integer> M; //HashSet de candidatos.
-    //private HashSet<Integer> n; //HashSet de no candidatos.
-  
     /*---------------- MÉTODOS PÚBLICOS ---------------*/
     
     /**
@@ -26,14 +23,15 @@ public class Greedy extends Algoritmo{
      * de los archivos necesarios: matriz de datos, hashSet de solución candidata, numero de candidatos...
      * @param args Parametro necesario para la posible lectura en la clase abstracta de los datos.
      */
-    public Greedy(String[] args){
-        super(args);
-        /*M = new HashSet<>(getNum_candidatos());
-        n = new HashSet<>(getNum_elementos());
+    public Greedy(String[] args, Integer num_archivo){
+        super(args,num_archivo);
+        //Generamos el primer punto aleatorio a partir de la semilla y lo añadimos al hashSet solución.
+        Random random = new Random();
+        random.Set_random(getConfig().getSemillas().get(0));
         
-        for (int i=0; i < getNum_elementos(); i++)
-            n.add(i);*/
-
+        int puntoInicio = random.Randint(0,getNum_elementos()-11);      
+        M.add(puntoInicio);
+        n.remove(puntoInicio);
     }
     
     /**
@@ -44,13 +42,6 @@ public class Greedy extends Algoritmo{
      * @return HashSet correspondiente a la solución candidata final.
      */
     public HashSet<Integer> algoritmoGreedy(){
-        
-        //Generamos el primer punto aleatorio a partir de la semilla y lo añadimos al hashSet solución.
-        Random  random = new Random(getConfig().getSemillas().get(0));
-        int puntoInicio = random.nextInt(getNum_elementos());
-        
-        M.add(puntoInicio);
-        n.remove(puntoInicio);
         
         //Primer bucle necesario para acabar cuando se haya llenado el vector Solución.
         while (M.size() < getNum_candidatos()){

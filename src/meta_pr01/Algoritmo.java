@@ -19,9 +19,9 @@ public abstract class Algoritmo {
     protected HashSet<Integer> M; //Vector solución candidata.
     protected HashSet<Integer> n; //HashSet de no candidatos.
     
-    public Algoritmo(String[] _args){
+    public Algoritmo(String[] _args,Integer num_archivo){
         config = new Configurador(_args[0]);
-        archivo = new ArchivoDatos(getConfig().getArchivos().get(0)); 
+        archivo = new ArchivoDatos(getConfig().getArchivos().get(num_archivo)); 
         num_elementos = archivo.getTamMatriz();
         num_candidatos = archivo.getTamSolucion();
         M = new HashSet<>(num_candidatos);
