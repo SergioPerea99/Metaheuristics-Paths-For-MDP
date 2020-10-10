@@ -29,7 +29,7 @@ public class Greedy extends Algoritmo{
         Random random = new Random();
         random.Set_random(getConfig().getSemillas().get(0));
         
-        int puntoInicio = random.Randint(0,getNum_elementos()-11);      
+        int puntoInicio = random.Randint(0,getNum_elementos()-1);      
         M.add(puntoInicio);
         n.remove(puntoInicio);
     }
@@ -45,10 +45,10 @@ public class Greedy extends Algoritmo{
         
         //Primer bucle necesario para acabar cuando se haya llenado el vector Solución.
         while (M.size() < getNum_candidatos()){
-            float distMax = 0;
+            double distMax = 0;
             int elem_seleccionado = -1;
             for(Integer j : getN()){
-                float aux = distanciasElemento(j);
+                double aux = distanciasElemento(j);
                 if(distMax < aux){
                     distMax = aux;
                     elem_seleccionado = j;
@@ -64,23 +64,4 @@ public class Greedy extends Algoritmo{
         return M;
     }
 
-    /*---------------- MÉTODOS PRIVADOS ---------------*/
-    
-    /**
-     * @brief Distancias de un elemento respecto a los candidatos.
-     * @param elem Entero correspondiente que se quiere comprobar su distancia con los demás candidatos.
-     * @return Suma de las distancias del elemento del parámetro con todos los candidatos.
-     */
-    private float distanciasElemento(Integer elem){
-        float sumaDistancias = 0;
-        for(Integer i : getM())
-            //OJO: He puesto esta comprobacion para asegurar que sumaba de verdad las distancias y
-            //no cogia la parte de la matriz que estaba sin rellenar.
-            if(getArchivo().getMatrizDatos()[i][elem] != 0)
-                sumaDistancias += getArchivo().getMatrizDatos()[i][elem];
-            else
-                sumaDistancias += getArchivo().getMatrizDatos()[elem][i];
-        return sumaDistancias;
-    }
-    
 }

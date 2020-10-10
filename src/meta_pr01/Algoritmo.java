@@ -12,8 +12,12 @@ import java.util.HashSet;
  * @author spdlc
  */
 public abstract class Algoritmo {
+    
     private Configurador config;
     private ArchivoDatos archivo;
+    
+    protected int max_iteraciones;
+    protected double costeTotal;
     protected int num_elementos;
     protected int num_candidatos;
     protected HashSet<Integer> M; //Vector solución candidata.
@@ -21,7 +25,8 @@ public abstract class Algoritmo {
     
     public Algoritmo(String[] _args,Integer num_archivo){
         config = new Configurador(_args[0]);
-        archivo = new ArchivoDatos(getConfig().getArchivos().get(num_archivo)); 
+        archivo = new ArchivoDatos(getConfig().getArchivos().get(num_archivo));
+        max_iteraciones = config.getParametroExtra();
         num_elementos = archivo.getTamMatriz();
         num_candidatos = archivo.getTamSolucion();
         M = new HashSet<>(num_candidatos);
@@ -35,12 +40,29 @@ public abstract class Algoritmo {
      * @post La suma de todas las distancias de cada uno de los puntos con respecto a los demás puntos.
      * @return Sumatoria final.
      */
-    public float costeSolucion(){
-        float coste = 0;
+    public double costeSolucion(){
+        costeTotal = 0;
         for(Integer i : M)
             for(Integer j : M)
-                coste += archivo.getMatrizDatos()[i][j];
-        return coste;
+                costeTotal += archivo.getMatrizDatos()[i][j];
+        return costeTotal;
+    }
+    
+    /**
+     * @brief Distancias de un elemento respecto a los candidatos.
+     * @post Método general para cualquier algoritmo que usemos, ya que se deberá comprobar el coste
+     * de un punto respecto a todos los demás de la solución.
+     * @param elem Entero correspondiente que se quiere comprobar su distancia con los demás candidatos.
+     * @return Suma de las distancias del elemento del parámetro con todos los candidatos.
+     */
+    protected double distanciasElemento(Integer elem){
+        double sumaDistancias = 0;
+        for(Integer i : M)
+            if(getArchivo().getMatrizDatos()[i][elem] != 0)
+                sumaDistancias += archivo.getMatrizDatos()[i][elem];
+            else
+                sumaDistancias += archivo.getMatrizDatos()[elem][i];
+        return sumaDistancias;
     }
 
     
@@ -88,4 +110,19 @@ public abstract class Algoritmo {
         return n;
     }
 
+    /**
+     * @return the max_iteraciones
+     */
+    public int getMax_iteraciones() {
+        return max_iteraciones;
+    }
+
+    /**
+     * @return the coste
+     */
+    public double getCoste() {
+        return costeTotal;
+    }
+    
+    
 }
