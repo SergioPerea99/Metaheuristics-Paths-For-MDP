@@ -5,6 +5,7 @@
  */
 package meta_pr01;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -42,9 +43,14 @@ public abstract class Algoritmo {
      */
     public double costeSolucion(){
         costeTotal = 0;
-        for(Integer i : M)
-            for(Integer j : M)
-                costeTotal += archivo.getMatrizDatos()[i][j];
+        ArrayList<Integer> v_M = new ArrayList<>(M);
+        for(int i = 0; i < v_M.size()- 1; i++)
+            for(int j = i+1; j < v_M.size(); j++){
+                if(archivo.getMatrizDatos()[v_M.get(i)][v_M.get(j)] != 0)
+                    costeTotal += archivo.getMatrizDatos()[v_M.get(i)][v_M.get(j)];
+                else
+                    costeTotal += archivo.getMatrizDatos()[v_M.get(j)][v_M.get(i)];
+            }
         return costeTotal;
     }
     
@@ -57,11 +63,12 @@ public abstract class Algoritmo {
      */
     protected double distanciasElemento(Integer elem){
         double sumaDistancias = 0;
-        for(Integer i : M)
-            if(getArchivo().getMatrizDatos()[i][elem] != 0)
-                sumaDistancias += archivo.getMatrizDatos()[i][elem];
+        ArrayList<Integer> v_M = new ArrayList<>(M);
+        for(int i = 0; i < v_M.size(); i++)
+            if(getArchivo().getMatrizDatos()[v_M.get(i)][elem] != 0)
+                sumaDistancias += archivo.getMatrizDatos()[v_M.get(i)][elem];
             else
-                sumaDistancias += archivo.getMatrizDatos()[elem][i];
+                sumaDistancias += archivo.getMatrizDatos()[elem][v_M.get(i)];
         return sumaDistancias;
     }
 

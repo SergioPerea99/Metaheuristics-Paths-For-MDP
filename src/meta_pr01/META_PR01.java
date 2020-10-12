@@ -47,11 +47,12 @@ public class META_PR01 {
                         break;
 
                     case "busqueda local":
-                        
-                        BusquedaLocal b_local = new BusquedaLocal(args, i);
+                        System.out.print("Escribe la semilla a querer usar([0,n-1]): ");
+                        int sem = Integer.parseInt (br.readLine());
+                        BusquedaLocal b_local = new BusquedaLocal(args, i,sem);
                         b_local.algBusquedaLocal();
                         System.out.println(b_local.getM());
-                        System.out.println(b_local.costeSolucion());
+                        System.out.println(b_local.getCoste());
                         break;
 
                     default:
