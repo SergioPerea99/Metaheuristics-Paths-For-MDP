@@ -26,29 +26,36 @@ public class META_PR01 {
         try{
             int i;
             do{
-                System.out.println("Si quiere terminar de ejecutar algoritmos pulse -1.");
+                System.out.println("---------------------------------------------------");
+                System.out.println("---------------------------------------------------");
+                System.out.println("Si quiere terminar de ejecutar algoritmos escriba -1.");
+                
                 
                 System.out.print("FICHERO DE DATOS QUE QUIERE EJECUTAR ([0,8] vector de datos): ");
                 i = Integer.parseInt (br.readLine());
-                        
+                
+                if(i == -1)
+                    break;
+                
                 System.out.print("Escribe el algoritmo a querer usar (en minuscula): ");
                 String eleccion = br.readLine();
-                
+
+                System.out.print("Escribe la semilla a querer usar([0,nº_Semillas - 1]): ");
+                int sem = Integer.parseInt (br.readLine());
                 
                 switch(eleccion){
 
                     /*----- <ALGORITMO GREEDY -----*/
                     case "greedy":
                         
-                        Greedy greedy = new Greedy(args,i);
+                        Greedy greedy = new Greedy(args,i,sem);
                         greedy.algoritmoGreedy();
                         System.out.println(greedy.getM());
                         System.out.println(greedy.costeSolucion());
                         break;
 
                     case "busqueda local":
-                        System.out.print("Escribe la semilla a querer usar([0,n-1]): ");
-                        int sem = Integer.parseInt (br.readLine());
+                        
                         BusquedaLocal b_local = new BusquedaLocal(args, i,sem);
                         b_local.algBusquedaLocal();
                         System.out.println(b_local.getM());
@@ -62,7 +69,7 @@ public class META_PR01 {
             }while(i != -1);
             
         }catch(Exception e){
-            System.err.println("DEBES INTRODUCIR UN VALOR VALIDO EN EL VECTOR DE ARCHIVOS.");
+            System.err.println("DEBES INTRODUCIR UN VALOR VALIDO.");
         };
                 
     }

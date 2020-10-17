@@ -63,12 +63,11 @@ public abstract class Algoritmo {
      */
     protected double distanciasElemento(Integer elem){
         double sumaDistancias = 0;
-        ArrayList<Integer> v_M = new ArrayList<>(M);
-        for(int i = 0; i < v_M.size(); i++)
-            if(getArchivo().getMatrizDatos()[v_M.get(i)][elem] != 0)
-                sumaDistancias += archivo.getMatrizDatos()[v_M.get(i)][elem];
+        for(Integer i : M)
+            if(getArchivo().getMatrizDatos()[i][elem] != 0)
+                sumaDistancias += archivo.getMatrizDatos()[i][elem];
             else
-                sumaDistancias += archivo.getMatrizDatos()[elem][v_M.get(i)];
+                sumaDistancias += archivo.getMatrizDatos()[elem][i];
         return sumaDistancias;
     }
 

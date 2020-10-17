@@ -23,11 +23,11 @@ public class Greedy extends Algoritmo{
      * de los archivos necesarios: matriz de datos, hashSet de solución candidata, numero de candidatos...
      * @param args Parametro necesario para la posible lectura en la clase abstracta de los datos.
      */
-    public Greedy(String[] args, Integer num_archivo){
+    public Greedy(String[] args, Integer num_archivo,Integer sem){
         super(args,num_archivo);
         //Generamos el primer punto aleatorio a partir de la semilla y lo añadimos al hashSet solución.
         Random random = new Random();
-        random.Set_random(getConfig().getSemillas().get(0));
+        random.Set_random(getConfig().getSemillas().get(sem));
         
         int puntoInicio = random.Randint(0,getNum_elementos()-1);      
         M.add(puntoInicio);
