@@ -77,8 +77,6 @@ public class BusquedaTabu extends Algoritmo{
     public void algBusquedaTabu(){
         
         /*Inicialización de estructuras y variables necesarias.*/
-        ArrayList<Integer> v_M = new ArrayList<>(M);
-        ArrayList<Integer> v_n = new ArrayList<>(n);
         ArrayList<Integer> solucion_temp = new ArrayList<>(solucion_actual);
         
         HashSet<Integer> comprobados = new HashSet<>();
@@ -108,14 +106,14 @@ public class BusquedaTabu extends Algoritmo{
                 if(nuevoVecino != -1){
                     numVecinos++;
                     /*Una vez tengo un vecino valido, compruebo si mejora a la solucion actual o no.*/
-                    aux = factorizacion(seleccionado,nuevoVecino,v_n,solucion_temp);
+                    aux = factorizacion(seleccionado,nuevoVecino,solucion_temp);
                 
                     //System.out.println("VECINO GENERADO -> "+nuevoVecino+" :: FACTORIZACION CON ESE ELEMENTO -> "+aux);
                     /*Comprobación de si mejora o no un coste parcial para encontrar al mejor vecino del entorno de vecinos.*/
                     if(costeAux < aux){
-                        System.out.println(selecAux+" :: Intercambiando valor -> "+(costeAux - coste_actual));
+                        //System.out.println(selecAux+" :: Intercambiando valor -> "+(costeAux - coste_actual));
                         intercambiar(selecAux,nuevoVecino,solucion_temp);
-                        System.out.println(nuevoVecino+" :: Bien intercambiado a valor -> "+(aux - coste_actual));
+                        //System.out.println(nuevoVecino+" :: Bien intercambiado a valor -> "+(aux - coste_actual));
                         costeAux = aux;
                         selecAux = nuevoVecino; //Para que si cambia que sea siempre respecto al mismo elemento y no otro.
                     }
@@ -125,21 +123,18 @@ public class BusquedaTabu extends Algoritmo{
             /*Una vez haya 10 vecinos válidos generados y haber escogido al mejor de ellos, lo colocamos como solución actual (sea mejor o peor).*/
             coste_actual = costeAux;
             intercambiar(seleccionado, selecAux, solucion_actual); //Intercambio el mejor elemento de los vecinos por el peor elemento de la solución actual.
-            System.out.println("ITERACIONES: "+it+" de "+getMax_iteraciones()+" en este numero de intentos "+reinicio+" :: "+coste_actual);
-            System.out.println(solucion_actual.size());
+            System.out.println("ITERACIONES: "+it+" de "+getMax_iteraciones()+" en este numero de intentos "+reinicio+" :: "+coste_actual+"("+costeTotal+")");
             it++;
             
             /*Elimino el elemento que ya no se encuentra como posible vecino.*/
             n.remove(selecAux); 
-            v_n.remove(selecAux);
             
             /*Actualizo memoria a corto plazo*/
             int entrar = lista_tabu.pollLast();
             lista_tabu.push(seleccionado);
-            if(entrar != -1){
+            if(entrar != -1)
                 n.add(entrar);
-                v_n.add(entrar);
-            }
+            
             
             /*Actualizo memoria a largo plazo*/
             for(int i = 0; i < mem_largo_plazo.size(); i++)
@@ -155,12 +150,15 @@ public class BusquedaTabu extends Algoritmo{
                 //TODO: NO HACE FALTA LIMPIAR ENTERO, SOLO HE CAMBIADO 1 ELEMENTO !!!!!
                 M.clear();
                 M.addAll(solucion_actual); //Añado todos los elementos de la solución Actual en el HashSet de mi solución.
-                v_M = solucion_actual;
                 comprobados.clear(); //Limpiar el hashSet que indica que elemento de menor aporte ha sido ya seleccionado.
-                
+            
                 reinicio = 0;
-            }else
+            }else{
                 ++reinicio;
+                System.out.println("NO MEJORA :: "+reinicio);
+            }
+            
+            ///////////////// HASTA AQUI PARA QUE TODO VA BIEN Y REVISADO !!!
             
             /*¿Habrá que reiniciar? Sí, en caso de que reinicio sea >= máximo de intentos.*/
             if(reinicio >= INTENTOS_REINICIO){
@@ -168,25 +166,26 @@ public class BusquedaTabu extends Algoritmo{
                 /*Se usa en este caso, la memoria a largo plazo*/
                 solucionPorFrecuencias();
                 coste_actual = costeSolucion();
-            }
             
-            /*Reiniciamos la MCP y la MLP.*/
-            lista_tabu.clear();
-            for(int i = 0; i < TENENCIA_TABU; i++)
-                lista_tabu.add(-1);
-            mem_largo_plazo.clear();
-            for(int i = 0; i < mem_largo_plazo.size(); i++)
-                mem_largo_plazo.set(i,0);
             
-            /*¿La nueva solución actual supera a la mejor encontrada?*/
-            if(costeTotal < coste_actual){
-                costeTotal = coste_actual;
-                
-                //TODO: NO HACE FALTA LIMPIAR ENTERO, SOLO HE CAMBIADO 1 ELEMENTO !!!!!
-                M.clear();
-                M.addAll(solucion_actual); //Añado todos los elementos de la solución Actual en el HashSet de mi solución.
-                v_M = solucion_actual;
-                comprobados.clear();
+                /*Reiniciamos la MCP y la MLP.*/
+                lista_tabu.clear();
+                for(int i = 0; i < TENENCIA_TABU; i++)
+                    lista_tabu.add(-1);
+                mem_largo_plazo.clear();
+                for(int i = 0; i < mem_largo_plazo.size(); i++)
+                    mem_largo_plazo.set(i,0);
+
+                /*¿La nueva solución actual supera a la mejor encontrada?*/
+                if(costeTotal < coste_actual){
+                    costeTotal = coste_actual;
+
+                    //TODO: NO HACE FALTA LIMPIAR ENTERO, SOLO HE CAMBIADO 1 ELEMENTO !!!!!
+                    M.clear();
+                    M.addAll(solucion_actual); //Añado todos los elementos de la solución Actual en el HashSet de mi solución.
+                    //v_M = solucion_actual;
+                    comprobados.clear();
+                }
             }
             
             ++it;
@@ -218,7 +217,7 @@ public class BusquedaTabu extends Algoritmo{
         solucion_temp.add(j);
     }
     
-    private double factorizacion(int seleccionado,int j,ArrayList<Integer> v_n, ArrayList<Integer> v_M ){
+    private double factorizacion(int seleccionado,int j, ArrayList<Integer> v_M ){
         double costeMenor = 0, costeMayor =0;
         for (int k=0; k < M.size(); k++){
             if (v_M.get(k)!= seleccionado){
