@@ -7,6 +7,7 @@ package meta_pr01;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -42,14 +43,19 @@ public class META_PR01 {
 
                 System.out.print("Escribe la semilla a querer usar([0,nº_Semillas - 1]): ");
                 int sem = Integer.parseInt (br.readLine());
-                
+                long ms;
+                Date inicio, fin;
                 switch(eleccion){
 
                     /*----- <ALGORITMO GREEDY -----*/
                     case "greedy":
                         
                         Greedy greedy = new Greedy(args,i,sem);
+                        inicio = new Date();
                         greedy.algoritmoGreedy();
+                        fin = new Date();
+                        ms = fin.getTime()-inicio.getTime();
+                        System.out.println(ms+" milisegundos.");
                         System.out.println(greedy.getM());
                         System.out.println(greedy.costeSolucion());
                         break;
@@ -57,11 +63,24 @@ public class META_PR01 {
                     case "busqueda local":
                         
                         BusquedaLocal b_local = new BusquedaLocal(args, i,sem);
+                        inicio = new Date();
                         b_local.algBusquedaLocal();
+                        fin = new Date();
+                        ms = fin.getTime()-inicio.getTime();
+                        System.out.println(ms+" milisegundos.");
                         System.out.println(b_local.getM());
                         System.out.println(b_local.getCoste());
                         break;
 
+                    case "busqueda tabu":
+                        BusquedaTabu b_tabu = new BusquedaTabu(args, i, sem);
+                        inicio = new Date();
+                        b_tabu.algBusquedaTabu();
+                        fin = new Date();
+                        ms = fin.getTime()-inicio.getTime();
+                        System.out.println(ms+" milisegundos.");
+                        break;
+                    
                     default:
                         break;
                 }

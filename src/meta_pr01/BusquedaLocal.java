@@ -15,42 +15,60 @@ import java.util.HashSet;
 public class BusquedaLocal extends Algoritmo{
     /*---------------- MÉTODOS PÚBLICOS ---------------*/
     
+    /**
+     * @brief Constructor parametrizado.
+     * @param args
+     * @param num_archivo
+     * @param sem 
+     */
     public BusquedaLocal(String[] args, Integer num_archivo,int sem){
+        
         super(args,num_archivo);
+        
         //Generamos la primera solución candidata de partida a partir de un aleatorio.
         int i = 0, punto;
         Random random = new Random();
         random.Set_random(getConfig().getSemillas().get(sem));
         
+        /*INSTANCIO LA PRIMERA SOLUCIÓN VÁLIDA.*/
         while (M.size() < getNum_candidatos()){
             punto = random.Randint(0, num_elementos-1);
             M.add(punto);
             n.remove(punto);
             ++i;
         }
+        
+        /*GENERO EL VALOR DE LA SOLUCION INICIAL VÁLIDA*/
+        costeTotal = costeSolucion();
+        
     }
     
     public void algBusquedaLocal(){
 
-        costeTotal = costeSolucion();
-        //Primero vamos a buscar el de menor aporte.
+        
+        /*Inicialización de estructuras y variables necesarias.*/
+        ArrayList<Integer> v_M = new ArrayList<>(M);
+        ArrayList<Integer> v_n = new ArrayList<>(n);
         HashSet<Integer> comprobados = new HashSet<>();        
         Integer seleccionado = -1;
         int it = 0;
-        double costeMenor, costeMayor;
         boolean fin = false;
-        ArrayList<Integer> v_M = new ArrayList<>(M);
-        ArrayList<Integer> v_n = new ArrayList<>(n);
+        double aux;
+        
         //1 bucle: Por si debe de comprobar con los 50 puntos seleccionados escogiendo del menor al mayor en coste.
         while(it < getMax_iteraciones() && !fin){
             seleccionado = puntoMenorAporte(comprobados, v_M);
+            
             //2 bucle: Busqueda de un punto no seleccionado que supere al punto de menor coste encontrado en este momento.
             fin = true;
             for(int j = 0; j < v_n.size() && fin && it < getMax_iteraciones(); j++){
-                costeMayor = distanciasElemento(j);
-                double aux = factorizacion(seleccionado,v_n.get(j),v_n,v_M);
+                
+                aux = factorizacion(seleccionado,v_n.get(j),v_n,v_M);
+                
                 System.out.println("ITERACIONES: "+it+" de "+getMax_iteraciones()+" :: "+costeTotal);
                 ++it;
+                
+                /*Comprobación de si mejora o no la solución actual.*/
                 if(costeTotal < aux){
                     intercambiar(seleccionado,v_n.get(j),v_n,v_M);
                     costeTotal = aux;
