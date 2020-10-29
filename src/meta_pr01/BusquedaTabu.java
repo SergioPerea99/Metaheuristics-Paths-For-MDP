@@ -8,7 +8,6 @@ package meta_pr01;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Collections;
 import javafx.util.Pair;
 
 /**
@@ -16,6 +15,7 @@ import javafx.util.Pair;
  * @author spdlc
  */
 public class BusquedaTabu extends Algoritmo{
+    
     /*ATRIBUTOS ESTÁTICOS*/
     private static final int TENENCIA_TABU = 5;
     private static final int INTENTOS_REINICIO = 100;
@@ -27,10 +27,8 @@ public class BusquedaTabu extends Algoritmo{
     
     /*ATRIBUTOS DE LA MEJOR SOLUCIÓN ENCONTRADA.*/
     private double coste_actual;
-    private ArrayList<Integer> solucion_actual;
-    
-    /*ATRIBUTOS EXTRA PARA EVITAR COMPLICACIONES.*/
-    int semilla;
+    private HashSet<Integer> solucion_actual;
+
     
     
     /**
@@ -45,8 +43,7 @@ public class BusquedaTabu extends Algoritmo{
         
         /*Generamos la primera solución candidata de partida a partir de un aleatorio.*/
         int i = 0, punto;
-        semilla = sem;
-        random.Set_random(getConfig().getSemillas().get(semilla));
+        random.Set_random(getConfig().getSemillas().get(sem));
         
         /*INSTANCIO LA PRIMERA SOLUCIÓN VÁLIDA.*/
         while (M.size() < getNum_candidatos()){
@@ -56,94 +53,81 @@ public class BusquedaTabu extends Algoritmo{
             ++i;
         }
         
-        /*INSTANCIO LA LISTA TABÚ.*/
+        /*INSTANCIO E INICIALIZA LA LISTA TABÚ Y MEMORIA A LARGO PLAZO.*/
         lista_tabu = new LinkedList<>();
-        for (int j = 0; j < TENENCIA_TABU; j++)
-            lista_tabu.push(-1);
-        
-        /*INSTANCIO LA MEMORIA A LARGO PLAZO.*/
         mem_largo_plazo = new ArrayList<>(num_elementos);
-        Pair<Integer,Integer> añadir;
-        for (int j = 0; j < num_elementos; j++){
-            añadir = new Pair<>(j,0);
-            mem_largo_plazo.add(añadir);
-        }
-        System.out.println(mem_largo_plazo);
-        
-        
-        
-        solucion_actual = new ArrayList<>(M);  
-        
-        /*GENERO EL VALOR DE LA SOLUCION VÁLIDA INICIAL Y INDICO COMO MEJOR SOLUCIÓN DICHO COSTE*/
-        costeTotal = costeSolucion(solucion_actual);
-        coste_actual = costeTotal;
+        inicializarMemorias();
+
+        solucion_actual = new HashSet<>(M);  
+
     }
     
     
     
     public void algBusquedaTabu(){
-        
+
         /*Inicialización de estructuras y variables necesarias.*/
         ArrayList<Integer> solucion_temp = new ArrayList<>(solucion_actual);
         
-        HashSet<Integer> comprobados = new HashSet<>();
-        HashSet<Integer> vecinos = new HashSet<>();
+        costeTotal = costeSolucion(solucion_temp); //MEJOR COSTE ENCONTRADO. SIENDO M LA MEJOR SOLUCION ENCONTRADA.
+        coste_actual = costeTotal; //COSTE ACTUAL. SIENDO COSTE_ACTUAL EL MEJOR COSTE ACTUAL ENCONTRADO.
+
+        HashSet<Integer> comprobados = new HashSet<>(); //NO SELECCIONAR ELEMENTO DE MENOR VALOR YA COMPROBADO.
+        HashSet<Integer> vecinos = new HashSet<>(); //NO COGER MISMOS VECINOS.
         
-        int it = 0, reinicio = 0, numVecinos, seleccionado, selecAux;
-        double aux, costeAux;
+        int it = 0, reinicio = 0; //IT para las iteraciones. REINICIO para controlar cuando llamar a diversificar/intensificar una nueva solución.
+        int numVecinos, seleccionado, selecAux; //Control de número de vecinos, elemento a eliminar de la solución y elemento a insertar en la solución.
+        double aux, costeAux; //Costes auxiliares de soluciones que se van generando.
         
         
-        System.out.println(solucion_actual);
-        System.out.println(coste_actual);
-        //1 bucle: Por si debe de comprobar con los 50 puntos seleccionados escogiendo del menor al mayor en coste.
+        /*HASTA QUE ITERE EL MAXIMO DE ITERACIONES INDICADAS.*/
         while(it < getMax_iteraciones()){
-            seleccionado = puntoMenorAporte(comprobados);
-            System.out.println("ELEMENTO A QUITAR --> "+seleccionado+" :: "+distanciasElemento(seleccionado));
-            numVecinos = 0;
-            costeAux = 0;
-            vecinos.clear();
+            /*Selecciono el elemento que se sacará de la solución actual.*/
+            seleccionado = puntoMenorAporte(comprobados,solucion_temp);
             
-            selecAux = seleccionado;
-            //2 bucle: Busqueda de un punto no seleccionado que supere al punto de menor coste encontrado en este momento.
+            /*Reinicio de valores necesario*/
+            numVecinos = 0; //Limpiar contador de vecinos generados.
+            costeAux = 0; //Limpiar mejor coste entre los vecinos.
+            selecAux = seleccionado; //Será el primer elemento de la solución parcial en ser quitado una vez encuentra 1 vecino.
+            vecinos.clear(); //Limpiar vecinos generados.
+            
+            System.out.println(M.size()+" --> "+costeTotal);
+            
+            /*BUSQUEDA DE N VECINOS VÁLIDOS.*/
             while(numVecinos < 10){
                 
                 /*Controlo que no intente añadir un vecino ya mirado, no sea tabú y que sea válido.*/
-                int nuevoVecino = generaVecino(vecinos);
+                int nuevoVecino = generaVecino(vecinos,solucion_temp);
                 
-                if(nuevoVecino != -1){
+                
+                if(nuevoVecino != -1){ /*EN CASO DE SER VECINO VÁLIDO*/
                     numVecinos++;
-                    /*Una vez tengo un vecino valido, compruebo si mejora a la solucion actual o no.*/
+                    
                     aux = factorizacion(seleccionado,nuevoVecino,solucion_temp);
                 
-                    //System.out.println("VECINO GENERADO -> "+nuevoVecino+" :: FACTORIZACION CON ESE ELEMENTO -> "+aux);
-                    /*Comprobación de si mejora o no un coste parcial para encontrar al mejor vecino del entorno de vecinos.*/
-                    if(costeAux < aux){
-                        //System.out.println(selecAux+" :: Intercambiando valor -> "+(costeAux - coste_actual));
+                    /*LA PRIMERA VEZ ENTRA SEGURO, YA QUE ES EL MEJOR VECINO ENCONTRADO HASTA EL MOMENTO.*/
+                    if(costeAux < aux){ 
                         intercambiar(selecAux,nuevoVecino,solucion_temp);
-                        //System.out.println(nuevoVecino+" :: Bien intercambiado a valor -> "+(aux - coste_actual));
                         costeAux = aux;
-                        selecAux = nuevoVecino; //Para que si cambia que sea siempre respecto al mismo elemento y no otro.
+                        selecAux = nuevoVecino; //CAMBIAR SIEMPRE RESPECTO AL ELEMENTO QUE MENOR VALOR NOS DIÓ EN UN PRINCIPIO, MACHACANDO AL VECINO ÚLTIMO QUE LO CAMBIASE.
                     }
                 }
             }
             
-            /*Una vez haya 10 vecinos válidos generados y haber escogido al mejor de ellos, lo colocamos como solución actual (sea mejor o peor).*/
-            coste_actual = costeAux;
-            intercambiar(seleccionado, selecAux, solucion_actual); //Intercambio el mejor elemento de los vecinos por el peor elemento de la solución actual.
-            System.out.println("ITERACIONES: "+it+" de "+getMax_iteraciones()+" en este numero de intentos "+reinicio+" :: "+coste_actual+"("+costeTotal+")");
-            it++;
+            /*GENERADOS LOS N VECINOS, APLICAMOS EL INTERCAMBIO EN LA SOLUCION ACTUAL.*/
+            solucion_actual.remove(seleccionado); //ELIMINA EL ELEMENTO DE MENOR APORTE ENCONTRADO ANTES DE GENERAR VECINOS.
+            solucion_actual.add(selecAux); //AÑADE EL MEJOR DE LOS VECINOS ENCONTRADO.
+
+            n.remove(selecAux); //ELIMINAR ELEMENTO A GENERAR COMO VECINO EL INSERTADO EN LA SOLUCION ACTUAL.
+            comprobados.clear(); //Limpiar el hashSet que indica qué elemento de menor aporte había sido ya seleccionado.
             
-            /*Elimino el elemento que ya no se encuentra como posible vecino.*/
-            n.remove(selecAux); 
-            
-            /*Actualizo memoria a corto plazo*/
-            int entrar = lista_tabu.pollLast();
-            lista_tabu.push(seleccionado);
+            /*ACTUALIACION MEM CORTO PLAZO.*/
+            int entrar = lista_tabu.pollLast(); //ELIMINA EL ULTIMO ELEMENTO DE LA LISTA.
+            lista_tabu.push(seleccionado); //AÑADE AL INICIO DE LA LISTA.
             if(entrar != -1)
-                n.add(entrar);
-            //System.out.println(lista_tabu);
+                n.add(entrar); //AÑADIR A POSIBLE ELEMENTO QUE SE GENERE COMO VECINO SI SALE DE LA LISTA TABÚ.
             
-            /*Actualizo memoria a largo plazo*/
+            /*ACTUALIZACION DE MEM LARGO PLAZO.*/
             Pair<Integer,Integer> modificar;
             for(int i = 0; i < mem_largo_plazo.size(); i++)
                 if(solucion_actual.contains(i)){
@@ -151,56 +135,44 @@ public class BusquedaTabu extends Algoritmo{
                     mem_largo_plazo.set(i, modificar);
                 }
             
-            comprobados.clear(); //Limpiar el hashSet que indica que elemento de menor aporte ha sido ya seleccionado.
-            
-            /*Compruebo si la solución Actual mejora a la mejor solución. Si no se mejora, se suma 1 al reinicio.*/
+            /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
             if(costeTotal < coste_actual){
+                M.remove(seleccionado);
+                M.add(selecAux);
                 
-                /*Entonces, actualizo la mejor solución obtenida.*/
-                costeTotal = coste_actual;
-                
-                //TODO: NO HACE FALTA LIMPIAR ENTERO, SOLO HE CAMBIADO 1 ELEMENTO !!!!!
-                M.clear();
-                M.addAll(solucion_actual); //Añado todos los elementos de la solución Actual en el HashSet de mi solución.
-
+                if(M.size() == num_candidatos)
+                    costeTotal = coste_actual;
+                else
+                    System.out.println("ERROR EN LA INSERCION DE ELEMENTOS DEL VECTOR DE LA MEJOR SOLUCIÓN FINAL. TAMAÑO de M: "+M.size());
                 reinicio = 0;
             }else
                 ++reinicio;
             
+            System.out.println("ITER "+it+" de "+getMax_iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+"con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
+            it++;
             
-            ///////////////// HASTA AQUI PARA QUE TODO VA BIEN Y REVISADO !!!
+            ///////////////////////////////////////// COMPROBADO LINEA POR LINEA HASTA AQUI.
             
-            /*¿Habrá que reiniciar? Sí, en caso de que reinicio sea >= máximo de intentos.*/
+            /*EN CASO DE GENERAR SOLUCIÓN ACTUAL TOTALMENTE NUEVA.*/
             if(reinicio >= INTENTOS_REINICIO){
                 reinicio = 0;
                 
                 /*Se usa en este caso, la memoria a largo plazo*/
-                solucionPorFrecuencias();
-                coste_actual = costeSolucion(solucion_actual);
-                //System.out.println("Coste nuevo actual ----> "+coste_actual);
-                
-                /*Reiniciamos la MCP y la MLP.*/
-                lista_tabu.clear();
-                for(int i = 0; i < TENENCIA_TABU; i++)
-                    lista_tabu.add(-1);
-                
-                mem_largo_plazo.clear();
-                mem_largo_plazo.sort((o1,o2) -> o1.getKey().compareTo(o2.getKey()));
-                Pair<Integer,Integer> añadir;
-                for (int j = 0; j < num_elementos; j++){
-                    añadir = new Pair<>(j,0);
-                    mem_largo_plazo.add(j,añadir);
-                }
-                System.out.println(mem_largo_plazo);
-
-                /*¿La nueva solución actual supera a la mejor encontrada?*/
+                solucionPorFrecuencias(); //GENERA UNA SOLUCION ACTUAL COMPLETAMENTE NUEVA.
+           
+                /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
                 if(costeTotal < coste_actual){
-                    costeTotal = coste_actual;
-
-                    //TODO: NO HACE FALTA LIMPIAR ENTERO, SOLO HE CAMBIADO 1 ELEMENTO !!!!!
+                    /*DEBE LIMPIAR POR COMPLETO A LA MEJOR SOLUCION ENCONTRADA FINAL Y COPIAR LOS ELEMENTOS DE LA SOLUCION ACTUAL GENERADA A PARTIR DE LA MEMORIA A LARGO PLAZO.*/
                     M.clear();
-                    M.addAll(solucion_actual); //Añado todos los elementos de la solución Actual en el HashSet de mi solución.
-                    comprobados.clear();
+                    
+                    solucion_actual.forEach((i) -> { //AÑADE ELEMENTO A ELEMENTO DE LA SOLUCION ACTUAL.
+                        M.add(i); 
+                    });
+
+                    if (M.size() == num_candidatos)
+                        costeTotal = coste_actual;
+                    else
+                        System.out.println("ERROR EN LA INSERCION DE ELEMENTOS DEL VECTOR DE LA MEJOR SOLUCIÓN FINAL. TAMAÑO de M: "+M.size());
                 }
             }
             
@@ -210,22 +182,22 @@ public class BusquedaTabu extends Algoritmo{
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
     
-    private int puntoMenorAporte(HashSet<Integer> comprobados) {
+    private int puntoMenorAporte(HashSet<Integer> comprobados,ArrayList<Integer> solucion_temp) {
         double dist_punto;
         int pos = -1;
-        double menorCoste = distanciasElemento(solucion_actual.get(0));
-        for(int i = 1; i < solucion_actual.size(); i++){
-            dist_punto = distanciasElemento(solucion_actual.get(i));
-            if(menorCoste > dist_punto && !comprobados.contains(solucion_actual.get(i))){
+        double menorCoste = distanciasElemento(solucion_temp.get(0));
+        for(int i = 1; i < solucion_temp.size(); i++){
+            dist_punto = distanciasElemento(solucion_temp.get(i));
+            if(menorCoste > dist_punto && !comprobados.contains(solucion_temp.get(i))){
                 menorCoste = dist_punto;
                 pos = i;
             }
         }
         if (pos != -1){
-            comprobados.add(solucion_actual.get(pos));
-            return solucion_actual.get(pos);
+            comprobados.add(solucion_temp.get(pos));
+            return solucion_temp.get(pos);
         }
-        return solucion_actual.get(0);
+        return solucion_temp.get(0);
     }
     
     private void intercambiar(Integer seleccionado, Integer j, ArrayList<Integer> solucion_temp){
@@ -235,7 +207,7 @@ public class BusquedaTabu extends Algoritmo{
     
     private double factorizacion(int seleccionado,int j, ArrayList<Integer> v_M ){
         double costeMenor = 0, costeMayor =0;
-        for (int k=0; k < M.size(); k++){
+        for (int k=0; k < v_M.size(); k++){
             if (v_M.get(k)!= seleccionado){
                 if (getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)] != 0)
                     costeMenor += getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)];
@@ -261,30 +233,25 @@ public class BusquedaTabu extends Algoritmo{
      * actual o si diversificar.
      */
     private void solucionPorFrecuencias(){
-        /*Primero ordeno el vector de la memoria a largo plazo de MENOR A MAYOR.*/
-        
-        //TODO: CREO QUE NO DEBO ORDENAR PORQUE ME CARGO EL ELEMENTO QUE SERÍA. O GENERAR UN PAIR.
-        //System.out.println(mem_largo_plazo);
-        mem_largo_plazo.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
-        //System.out.println(mem_largo_plazo);
-        
-        //////////////// ORDENA BIEN !!!
+
+        mem_largo_plazo.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue())); /*ORDENACION DE LA MEMORIA A LARGO PLAZO.*/
       
-        solucion_actual.clear();
+        solucion_actual.clear(); /*LIMPIAR LA SOLUCION ACTUAL.*/
         
-        double aleatorio = random.Randfloat(0, 1);
-        /*En caso de dar el primer 50% no inclusive, se DIVERSIFICARÁ.*/
-        if(aleatorio < PORCENTAJE_REINICIO_MLP)
+        double aleatorio = random.Randfloat(0, 1); /*ALEATORIO DE PORCENTAJE PARA VER SI INTENSIFICA O DIVERSIFICA HACIA UNA NUEVA SOLUCION ACTUAL.*/
+
+        if(aleatorio < PORCENTAJE_REINICIO_MLP){ /*DIVERSIFICARÁ.*/
             for(int i = 0; i < num_candidatos; i++)
                 solucion_actual.add(mem_largo_plazo.get(i).getKey());
-        
-        /*En caso de superar el 50% inclusive, se INTENSIFICARÁ.*/
-        else
+            System.out.println("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
+        }else{ /*INTENSIFICARÁ.*/
             for(int i = num_elementos-1; i >= num_elementos-num_candidatos; i--)
                 solucion_actual.add(mem_largo_plazo.get(i).getKey());
+            System.out.println("INTENSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
+        }
         
-        System.out.println(solucion_actual);
-            
+        ArrayList<Integer> aux = new ArrayList<>(solucion_actual);
+        coste_actual = costeSolucion(aux); //OPERACION DEL NUEVO COSTE DE LA SOLUCION ACTUAL.
     } 
     
     /**
@@ -294,12 +261,34 @@ public class BusquedaTabu extends Algoritmo{
      * corto plazo.
      * @return Integer que indica el nuevo vecino generado.
      */
-    private int generaVecino(HashSet<Integer> vecinos){
-        for(Integer i : n)
-            if(!vecinos.contains(i) && !lista_tabu.contains(i)){
+    private int generaVecino(HashSet<Integer> vecinos, ArrayList<Integer> sol_temp){
+        ArrayList<Integer> v_n = new ArrayList<>(n);
+        for(int i = 0; i < v_n.size(); i++){
+            i = random.Randint(0, v_n.size()-1); //ALEATORIO ENTRE LOS ELEMENTOS QUE PUEDEN SER SELECCIONADOS PARA FORMAR EL SIGUIENTE VECINO.
+            if(!vecinos.contains(v_n.get(i)) && !lista_tabu.contains(v_n.get(i)) && !sol_temp.contains(v_n.get(i))){
                 vecinos.add(i);
                 return i;  
             }
+        }
         return -1;
     }
+    
+    
+    private void inicializarMemorias(){
+        /*LISTA TABÚ.*/
+        lista_tabu.clear();
+        for (int i = 0; i < TENENCIA_TABU; i++) {
+            lista_tabu.add(-1);
+        }
+        
+        /*MEMORIA A LARGO PLAZO.*/
+        mem_largo_plazo.clear();
+        mem_largo_plazo.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+        Pair<Integer, Integer> añadir;
+        for (int j = 0; j < num_elementos; j++) {
+            añadir = new Pair<>(j, 0);
+            mem_largo_plazo.add(j, añadir);
+        }
+    }
 }
+
