@@ -83,7 +83,7 @@ public class BusquedaTabu extends Algoritmo{
         /*HASTA QUE ITERE EL MAXIMO DE ITERACIONES INDICADAS.*/
         while(it < getMax_iteraciones()){
             /*Selecciono el elemento que se sacará de la solución actual.*/
-            seleccionado = puntoMenorAporte(comprobados,solucion_temp);
+            seleccionado = puntoMenorAporte(comprobados);
             
             /*Reinicio de valores necesario*/
             numVecinos = 0; //Limpiar contador de vecinos generados.
@@ -95,28 +95,29 @@ public class BusquedaTabu extends Algoritmo{
             while(numVecinos < 10){
                 
                 /*Controlo que no intente añadir un vecino ya mirado, no sea tabú y que sea válido.*/
-                int nuevoVecino = generaVecino(vecinos,solucion_temp);
+                int nuevoVecino = generaVecino(vecinos);
                 
                 
                 if(nuevoVecino != -1){ /*EN CASO DE SER VECINO VÁLIDO*/
-                    numVecinos++;
-                    
-                    aux = factorizacion(seleccionado,nuevoVecino,solucion_temp);
-                
+                    aux = factorizacion(seleccionado,nuevoVecino);
                     /*LA PRIMERA VEZ ENTRA SEGURO, YA QUE ES EL MEJOR VECINO ENCONTRADO HASTA EL MOMENTO.*/
                     if(costeAux < aux){ 
-                        intercambiar(selecAux,nuevoVecino,solucion_temp);
-                        costeAux = aux;
-                        selecAux = nuevoVecino; //CAMBIAR SIEMPRE RESPECTO AL ELEMENTO QUE MENOR VALOR NOS DIÓ EN UN PRINCIPIO, MACHACANDO AL VECINO ÚLTIMO QUE LO CAMBIASE.
+                        if(!intercambiar(selecAux,nuevoVecino))
+                            --numVecinos;
+                        else{
+                            costeAux = aux;
+                            selecAux = nuevoVecino; //CAMBIAR SIEMPRE RESPECTO AL ELEMENTO QUE MENOR VALOR NOS DIÓ EN UN PRINCIPIO, MACHACANDO AL VECINO ÚLTIMO QUE LO CAMBIASE.
+                        }
                     }
+                    ++numVecinos;
                 }
             }
             
             //TODO: EVITAR HACER ESTO PARA TENER SIEMPRE 50 EN LA SOLUCION ACTUAL.
             
             /*GENERADOS LOS N VECINOS, APLICAMOS EL INTERCAMBIO EN LA SOLUCION ACTUAL.*/
-            solucion_actual.remove(seleccionado); //ELIMINA EL ELEMENTO DE MENOR APORTE ENCONTRADO ANTES DE GENERAR VECINOS.
-            solucion_actual.add(selecAux); //AÑADE EL MEJOR DE LOS VECINOS ENCONTRADO.
+            //solucion_actual.remove(seleccionado); //ELIMINA EL ELEMENTO DE MENOR APORTE ENCONTRADO ANTES DE GENERAR VECINOS.
+            //solucion_actual.add(selecAux); //AÑADE EL MEJOR DE LOS VECINOS ENCONTRADO.
 
             n.remove(selecAux); //ELIMINAR ELEMENTO A GENERAR COMO VECINO EL INSERTADO EN LA SOLUCION ACTUAL.
             comprobados.clear(); //Limpiar el hashSet que indica qué elemento de menor aporte había sido ya seleccionado.
@@ -148,7 +149,7 @@ public class BusquedaTabu extends Algoritmo{
             }else
                 ++reinicio;
             
-            System.out.println("ITER "+it+" de "+getMax_iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+"con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
+            System.out.println("ITER "+it+" de "+getMax_iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+" con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
             it++;
             
             ///////////////////////////////////////// COMPROBADO LINEA POR LINEA HASTA AQUI.
@@ -186,7 +187,8 @@ public class BusquedaTabu extends Algoritmo{
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
     
-    private int puntoMenorAporte(HashSet<Integer> comprobados,ArrayList<Integer> solucion_temp) {
+    private int puntoMenorAporte(HashSet<Integer> comprobados) {
+        ArrayList<Integer> solucion_temp = new ArrayList<>(solucion_actual);
         double dist_punto;
         int pos = -1;
         double menorCoste = distanciasElemento(solucion_temp.get(0));
@@ -201,15 +203,26 @@ public class BusquedaTabu extends Algoritmo{
             comprobados.add(solucion_temp.get(pos));
             return solucion_temp.get(pos);
         }
+        comprobados.add(solucion_temp.get(0));
         return solucion_temp.get(0);
     }
     
-    private void intercambiar(Integer seleccionado, Integer j, ArrayList<Integer> solucion_temp){
-        solucion_temp.remove(seleccionado);
-        solucion_temp.add(j);
+    private boolean intercambiar(Integer seleccionado, Integer j){
+        solucion_actual.remove(seleccionado);
+        solucion_actual.add(j);
+        if(num_candidatos == solucion_actual.size())
+            return true;
+        else if (num_candidatos > solucion_actual.size()){
+            solucion_actual.add(seleccionado);
+            return false;
+        }else{
+            solucion_actual.remove(j);
+            return false;
+        }
     }
     
-    private double factorizacion(int seleccionado,int j, ArrayList<Integer> v_M ){
+    private double factorizacion(int seleccionado,int j){
+        ArrayList<Integer> v_M = new ArrayList<>(solucion_actual);
         double costeMenor = 0, costeMayor =0;
         for (int k=0; k < v_M.size(); k++){
             if (v_M.get(k)!= seleccionado){
@@ -267,11 +280,11 @@ public class BusquedaTabu extends Algoritmo{
      * corto plazo.
      * @return Integer que indica el nuevo vecino generado.
      */
-    private int generaVecino(HashSet<Integer> vecinos, ArrayList<Integer> sol_temp){
+    private int generaVecino(HashSet<Integer> vecinos){
         ArrayList<Integer> v_n = new ArrayList<>(n);
         for(int i = 0; i < v_n.size(); i++){
             i = random.Randint(0, v_n.size()-1); //ALEATORIO ENTRE LOS ELEMENTOS QUE PUEDEN SER SELECCIONADOS PARA FORMAR EL SIGUIENTE VECINO.
-            if(!vecinos.contains(v_n.get(i)) && !lista_tabu.contains(v_n.get(i)) && !sol_temp.contains(v_n.get(i))){
+            if(!vecinos.contains(v_n.get(i)) && !lista_tabu.contains(v_n.get(i)) && !solucion_actual.contains(v_n.get(i))){
                 vecinos.add(i);
                 return i;  
             }
