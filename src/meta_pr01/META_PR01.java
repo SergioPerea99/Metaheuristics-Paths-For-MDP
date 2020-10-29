@@ -7,6 +7,7 @@ package meta_pr01;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Vector;
@@ -57,7 +58,8 @@ public class META_PR01 {
                         ms = fin.getTime()-inicio.getTime();
                         System.out.println(ms+" milisegundos.");
                         System.out.println(greedy.getM());
-                        System.out.println(greedy.costeSolucion());
+                        ArrayList<Integer> v_M = new ArrayList<>(greedy.getM());
+                        System.out.println(greedy.costeSolucion(v_M));
                         break;
 
                     case "busqueda local":

@@ -27,7 +27,6 @@ public class BusquedaLocal extends Algoritmo{
         
         //Generamos la primera solución candidata de partida a partir de un aleatorio.
         int i = 0, punto;
-        Random random = new Random();
         random.Set_random(getConfig().getSemillas().get(sem));
         
         /*INSTANCIO LA PRIMERA SOLUCIÓN VÁLIDA.*/
@@ -37,10 +36,7 @@ public class BusquedaLocal extends Algoritmo{
             n.remove(punto);
             ++i;
         }
-        
-        /*GENERO EL VALOR DE LA SOLUCION INICIAL VÁLIDA*/
-        costeTotal = costeSolucion();
-        
+
     }
     
     public void algBusquedaLocal(){
@@ -49,7 +45,11 @@ public class BusquedaLocal extends Algoritmo{
         /*Inicialización de estructuras y variables necesarias.*/
         ArrayList<Integer> v_M = new ArrayList<>(M);
         ArrayList<Integer> v_n = new ArrayList<>(n);
-        HashSet<Integer> comprobados = new HashSet<>();        
+        HashSet<Integer> comprobados = new HashSet<>();     
+        
+        /*GENERO EL VALOR DE LA SOLUCION INICIAL VÁLIDA*/
+        costeTotal = costeSolucion(v_M);
+        
         Integer seleccionado = -1;
         int it = 0;
         boolean fin = false;
