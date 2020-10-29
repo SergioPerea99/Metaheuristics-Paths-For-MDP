@@ -91,8 +91,6 @@ public class BusquedaTabu extends Algoritmo{
             selecAux = seleccionado; //Será el primer elemento de la solución parcial en ser quitado una vez encuentra 1 vecino.
             vecinos.clear(); //Limpiar vecinos generados.
             
-            System.out.println(M.size()+" --> "+costeTotal);
-            
             /*BUSQUEDA DE N VECINOS VÁLIDOS.*/
             while(numVecinos < 10){
                 
@@ -113,6 +111,8 @@ public class BusquedaTabu extends Algoritmo{
                     }
                 }
             }
+            
+            //TODO: EVITAR HACER ESTO PARA TENER SIEMPRE 50 EN LA SOLUCION ACTUAL.
             
             /*GENERADOS LOS N VECINOS, APLICAMOS EL INTERCAMBIO EN LA SOLUCION ACTUAL.*/
             solucion_actual.remove(seleccionado); //ELIMINA EL ELEMENTO DE MENOR APORTE ENCONTRADO ANTES DE GENERAR VECINOS.
@@ -159,7 +159,11 @@ public class BusquedaTabu extends Algoritmo{
                 
                 /*Se usa en este caso, la memoria a largo plazo*/
                 solucionPorFrecuencias(); //GENERA UNA SOLUCION ACTUAL COMPLETAMENTE NUEVA.
-           
+                
+                inicializarMemorias(); //REINICIO DE LAS MEMORIAS.
+                
+                solucion_temp  = new ArrayList<>(solucion_actual); //NECESARIO POR SI SE GENERA UNA SOLUCIÓN ACTUAL COMPLETAMENTE NUEVA.
+                
                 /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
                 if(costeTotal < coste_actual){
                     /*DEBE LIMPIAR POR COMPLETO A LA MEJOR SOLUCION ENCONTRADA FINAL Y COPIAR LOS ELEMENTOS DE LA SOLUCION ACTUAL GENERADA A PARTIR DE LA MEMORIA A LARGO PLAZO.*/
@@ -235,23 +239,25 @@ public class BusquedaTabu extends Algoritmo{
     private void solucionPorFrecuencias(){
 
         mem_largo_plazo.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue())); /*ORDENACION DE LA MEMORIA A LARGO PLAZO.*/
-      
+        System.out.println("MLP ORDENADO : "+mem_largo_plazo);
         solucion_actual.clear(); /*LIMPIAR LA SOLUCION ACTUAL.*/
-        
         double aleatorio = random.Randfloat(0, 1); /*ALEATORIO DE PORCENTAJE PARA VER SI INTENSIFICA O DIVERSIFICA HACIA UNA NUEVA SOLUCION ACTUAL.*/
-
+        int i = 0, j = num_elementos-1;
         if(aleatorio < PORCENTAJE_REINICIO_MLP){ /*DIVERSIFICARÁ.*/
-            for(int i = 0; i < num_candidatos; i++)
-                solucion_actual.add(mem_largo_plazo.get(i).getKey());
+            while (solucion_actual.size() < num_candidatos)
+                solucion_actual.add(mem_largo_plazo.get(i++).getKey());
             System.out.println("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
         }else{ /*INTENSIFICARÁ.*/
-            for(int i = num_elementos-1; i >= num_elementos-num_candidatos; i--)
-                solucion_actual.add(mem_largo_plazo.get(i).getKey());
+            //for(int i = num_elementos-1; i >= num_elementos-num_candidatos; i--)
+            while (solucion_actual.size() < num_candidatos)    
+                solucion_actual.add(mem_largo_plazo.get(j--).getKey());
             System.out.println("INTENSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
         }
         
         ArrayList<Integer> aux = new ArrayList<>(solucion_actual);
         coste_actual = costeSolucion(aux); //OPERACION DEL NUEVO COSTE DE LA SOLUCION ACTUAL.
+        aux.sort((o1,o2) -> o1.compareTo(o2));
+        System.out.println(coste_actual+" :: "+aux);
     } 
     
     /**
@@ -283,12 +289,12 @@ public class BusquedaTabu extends Algoritmo{
         
         /*MEMORIA A LARGO PLAZO.*/
         mem_largo_plazo.clear();
-        mem_largo_plazo.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
         Pair<Integer, Integer> añadir;
         for (int j = 0; j < num_elementos; j++) {
             añadir = new Pair<>(j, 0);
             mem_largo_plazo.add(j, añadir);
         }
+        mem_largo_plazo.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
     }
 }
 
