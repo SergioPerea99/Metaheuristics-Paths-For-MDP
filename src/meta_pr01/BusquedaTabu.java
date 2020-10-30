@@ -113,12 +113,6 @@ public class BusquedaTabu extends Algoritmo{
                 }
             }
             
-            //TODO: EVITAR HACER ESTO PARA TENER SIEMPRE 50 EN LA SOLUCION ACTUAL.
-            
-            /*GENERADOS LOS N VECINOS, APLICAMOS EL INTERCAMBIO EN LA SOLUCION ACTUAL.*/
-            //solucion_actual.remove(seleccionado); //ELIMINA EL ELEMENTO DE MENOR APORTE ENCONTRADO ANTES DE GENERAR VECINOS.
-            //solucion_actual.add(selecAux); //AÑADE EL MEJOR DE LOS VECINOS ENCONTRADO.
-
             n.remove(selecAux); //ELIMINAR ELEMENTO A GENERAR COMO VECINO EL INSERTADO EN LA SOLUCION ACTUAL.
             comprobados.clear(); //Limpiar el hashSet que indica qué elemento de menor aporte había sido ya seleccionado.
             
@@ -152,7 +146,7 @@ public class BusquedaTabu extends Algoritmo{
             System.out.println("ITER "+it+" de "+getMax_iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+" con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
             it++;
             
-            ///////////////////////////////////////// COMPROBADO LINEA POR LINEA HASTA AQUI.
+            
             
             /*EN CASO DE GENERAR SOLUCIÓN ACTUAL TOTALMENTE NUEVA.*/
             if(reinicio >= INTENTOS_REINICIO){
@@ -162,9 +156,7 @@ public class BusquedaTabu extends Algoritmo{
                 solucionPorFrecuencias(); //GENERA UNA SOLUCION ACTUAL COMPLETAMENTE NUEVA.
                 
                 inicializarMemorias(); //REINICIO DE LAS MEMORIAS.
-                
-                solucion_temp  = new ArrayList<>(solucion_actual); //NECESARIO POR SI SE GENERA UNA SOLUCIÓN ACTUAL COMPLETAMENTE NUEVA.
-                
+
                 /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
                 if(costeTotal < coste_actual){
                     /*DEBE LIMPIAR POR COMPLETO A LA MEJOR SOLUCION ENCONTRADA FINAL Y COPIAR LOS ELEMENTOS DE LA SOLUCION ACTUAL GENERADA A PARTIR DE LA MEMORIA A LARGO PLAZO.*/
@@ -252,8 +244,8 @@ public class BusquedaTabu extends Algoritmo{
     private void solucionPorFrecuencias(){
 
         mem_largo_plazo.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue())); /*ORDENACION DE LA MEMORIA A LARGO PLAZO.*/
-        System.out.println("MLP ORDENADO : "+mem_largo_plazo);
         solucion_actual.clear(); /*LIMPIAR LA SOLUCION ACTUAL.*/
+        
         double aleatorio = random.Randfloat(0, 1); /*ALEATORIO DE PORCENTAJE PARA VER SI INTENSIFICA O DIVERSIFICA HACIA UNA NUEVA SOLUCION ACTUAL.*/
         int i = 0, j = num_elementos-1;
         if(aleatorio < PORCENTAJE_REINICIO_MLP){ /*DIVERSIFICARÁ.*/
@@ -261,7 +253,6 @@ public class BusquedaTabu extends Algoritmo{
                 solucion_actual.add(mem_largo_plazo.get(i++).getKey());
             System.out.println("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
         }else{ /*INTENSIFICARÁ.*/
-            //for(int i = num_elementos-1; i >= num_elementos-num_candidatos; i--)
             while (solucion_actual.size() < num_candidatos)    
                 solucion_actual.add(mem_largo_plazo.get(j--).getKey());
             System.out.println("INTENSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
@@ -270,7 +261,6 @@ public class BusquedaTabu extends Algoritmo{
         ArrayList<Integer> aux = new ArrayList<>(solucion_actual);
         coste_actual = costeSolucion(aux); //OPERACION DEL NUEVO COSTE DE LA SOLUCION ACTUAL.
         aux.sort((o1,o2) -> o1.compareTo(o2));
-        System.out.println(coste_actual+" :: "+aux);
     } 
     
     /**
@@ -293,6 +283,10 @@ public class BusquedaTabu extends Algoritmo{
     }
     
     
+    /**
+     * @brief Iniciar/Reiniciar valores de memorias.
+     * @post Inicia/Reinicia los valores de la lista tabú de la estructura que mantiene la memoria a largo plazo.
+     */
     private void inicializarMemorias(){
         /*LISTA TABÚ.*/
         lista_tabu.clear();
