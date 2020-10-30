@@ -78,7 +78,9 @@ public class META_PR01 {
                         b_tabu.algBusquedaTabu();
                         fin = new Date();
                         ms = fin.getTime()-inicio.getTime();
-                        System.out.println(b_tabu.getCoste()+" :: "+b_tabu.getM());
+                        System.out.println("");
+                        System.out.println(b_tabu.getM());
+                        System.out.println("COSTE SOLUCIÓN -> "+b_tabu.getCoste());
                         System.out.println(ms+" milisegundos.");
                         break;
                     

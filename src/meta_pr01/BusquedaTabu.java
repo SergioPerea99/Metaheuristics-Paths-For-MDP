@@ -67,6 +67,7 @@ public class BusquedaTabu extends Algoritmo{
 
         /*Inicialización de estructuras y variables necesarias.*/
         ArrayList<Integer> solucion_temp = new ArrayList<>(solucion_actual);
+        ArrayList<Pair<Integer,Double>> v_distancias = new ArrayList<>();
         
         costeTotal = costeSolucion(solucion_temp); //MEJOR COSTE ENCONTRADO. SIENDO M LA MEJOR SOLUCION ENCONTRADA.
         coste_actual = costeTotal; //COSTE ACTUAL. SIENDO COSTE_ACTUAL EL MEJOR COSTE ACTUAL ENCONTRADO.
@@ -75,51 +76,62 @@ public class BusquedaTabu extends Algoritmo{
         HashSet<Integer> vecinos = new HashSet<>(); //NO COGER MISMOS VECINOS.
         
         int it = 0, reinicio = 0; //IT para las iteraciones. REINICIO para controlar cuando llamar a diversificar/intensificar una nueva solución.
-        int numVecinos, seleccionado, selecAux; //Control de número de vecinos, elemento a eliminar de la solución y elemento a insertar en la solución.
+        int numVecinos = 0, seleccionado = -1, selecAñadir = -1, selecQuitar; //Control de número de vecinos, elemento a eliminar de la solución y elemento a insertar en la solución.
         double aux, costeAux; //Costes auxiliares de soluciones que se van generando.
-        System.out.println(n.size());
         
         int entorno = M.size()*n.size(); //ENTORNO COMPLETO: |E| = M*(N-M).
         int vecindario = entorno; //VECINDARIO QUE SE VA A IR GENERANDO POR ITERACION.
         
         /*HASTA QUE ITERE EL MAXIMO DE ITERACIONES INDICADAS.*/
         while(it < getConfig().getMax_Iteraciones()){
-            /*Selecciono el elemento que se sacará de la solución actual.*/
-            seleccionado = puntoMenorAporte(comprobados);
             
             /*Reinicio de valores necesario*/
             numVecinos = 0; //Limpiar contador de vecinos generados.
             costeAux = 0; //Limpiar mejor coste entre los vecinos.
-            selecAux = seleccionado; //Será el primer elemento de la solución parcial en ser quitado una vez encuentra 1 vecino.
+            selecAñadir = seleccionado; //Será el primer elemento de la solución parcial en ser quitado una vez encuentra 1 vecino.
+            selecQuitar = -1;
             vecinos.clear(); //Limpiar vecinos generados.
+            solucion_temp.clear();
+            solucion_temp = new ArrayList<>(solucion_actual);
+
+            ordenacionMenorAporte(v_distancias); //Ordenacion del vector de aportes.
             
             /*BUSQUEDA DE N VECINOS VÁLIDOS.*/
-            while(numVecinos < vecindario){
+            for(int i =0; i < M.size() && numVecinos < vecindario; i++){
                 
-                /*Controlo que no intente añadir un vecino ya mirado, no sea tabú y que sea válido.*/
-                int nuevoVecino = generaVecino(vecinos);
+                seleccionado = v_distancias.get(i).getKey();
                 
-                
-                if(nuevoVecino != -1){ /*EN CASO DE SER VECINO VÁLIDO*/
-                    aux = factorizacion(seleccionado,nuevoVecino);
-                    /*LA PRIMERA VEZ ENTRA SEGURO, YA QUE ES EL MEJOR VECINO ENCONTRADO HASTA EL MOMENTO.*/
-                    if(costeAux < aux){ 
-                        if(!intercambiar(selecAux,nuevoVecino))
-                            --numVecinos;
-                        else{
-                            costeAux = aux;
-                            selecAux = nuevoVecino; //CAMBIAR SIEMPRE RESPECTO AL ELEMENTO QUE MENOR VALOR NOS DIÓ EN UN PRINCIPIO, MACHACANDO AL VECINO ÚLTIMO QUE LO CAMBIASE.
+                for(int j = 0; j < n.size() && numVecinos < vecindario; j++){
+                    /*Controlo que no intente añadir un vecino ya mirado, no sea tabú y que sea válido.*/
+                    int nuevoVecino = generaVecino(vecinos);
+
+                    //System.out.print(nuevoVecino+" ");
+                    if(nuevoVecino != -1){ /*EN CASO DE SER VECINO VÁLIDO*/
+                        aux = factorizacion(seleccionado,nuevoVecino);
+                        /*LA PRIMERA VEZ ENTRA SEGURO, YA QUE ES EL MEJOR VECINO ENCONTRADO HASTA EL MOMENTO.*/
+                        if(costeAux < aux){ 
+                            if(!intercambiar(seleccionado,nuevoVecino,solucion_temp))
+                                --numVecinos;
+                            else{
+                                //System.out.println(costeAux+" --> "+aux);
+                                costeAux = aux;
+                                selecAñadir = nuevoVecino; //CAMBIAR SIEMPRE RESPECTO AL ELEMENTO QUE MENOR VALOR NOS DIÓ EN UN PRINCIPIO, MACHACANDO AL VECINO ÚLTIMO QUE LO CAMBIASE.
+                                selecQuitar = seleccionado;
+                            }
                         }
+                        ++numVecinos;
                     }
-                    ++numVecinos;
                 }
             }
-            System.out.println("NUMERO DE VECINOS GENERADOS: "+numVecinos);
+            
+            solucion_actual.remove(selecQuitar);
+            solucion_actual.add(selecAñadir);
+            coste_actual = costeAux;
+            
             if (vecindario > 10)
                 vecindario = (int)(vecindario * getConfig().getREDUCCION_VECINDARIO());
             
-            n.remove(selecAux); //ELIMINAR ELEMENTO A GENERAR COMO VECINO EL INSERTADO EN LA SOLUCION ACTUAL.
-            comprobados.clear(); //Limpiar el hashSet que indica qué elemento de menor aporte había sido ya seleccionado.
+            n.remove(selecAñadir); //ELIMINAR ELEMENTO A GENERAR COMO VECINO EL INSERTADO EN LA SOLUCION ACTUAL.
             
             /*ACTUALIACION MEM CORTO PLAZO.*/
             int entrar = lista_tabu.pollLast(); //ELIMINA EL ULTIMO ELEMENTO DE LA LISTA.
@@ -137,9 +149,8 @@ public class BusquedaTabu extends Algoritmo{
             
             /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
             if(costeTotal < coste_actual){
-                M.remove(seleccionado);
-                M.add(selecAux);
-                
+                M = new HashSet<>(solucion_actual);
+
                 if(M.size() == num_candidatos)
                     costeTotal = coste_actual;
                 else
@@ -148,7 +159,7 @@ public class BusquedaTabu extends Algoritmo{
             }else
                 ++reinicio;
             
-            System.out.println("ITER "+it+" de "+getConfig().getMax_Iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+" con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
+            System.out.println("ITER "+it+" ("+getConfig().getMax_Iteraciones()+") :: "+vecindario+" vecinos generados :: Nº intentos "+reinicio+" :: Coste actual -> "+coste_actual+"("+costeTotal+" con "+M.size()+" elementos).");
             it++;
             
             
@@ -171,10 +182,8 @@ public class BusquedaTabu extends Algoritmo{
                         M.add(i); 
                     });
 
-                    if (M.size() == num_candidatos)
-                        costeTotal = coste_actual;
-                    else
-                        System.out.println("ERROR EN LA INSERCION DE ELEMENTOS DEL VECTOR DE LA MEJOR SOLUCIÓN FINAL. TAMAÑO de M: "+M.size());
+                    costeTotal = coste_actual;
+                    
                 }
             }
             
@@ -204,16 +213,27 @@ public class BusquedaTabu extends Algoritmo{
         return solucion_temp.get(0);
     }
     
-    private boolean intercambiar(Integer seleccionado, Integer j){
-        solucion_actual.remove(seleccionado);
-        solucion_actual.add(j);
-        if(num_candidatos == solucion_actual.size())
+    private void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias){
+        v_distancias.clear();
+        ArrayList<Integer> v_solucion = new ArrayList<>(solucion_actual);
+        Pair<Integer,Double> añadir;
+        for (int i = 0; i < v_solucion.size(); i++){
+            añadir = new Pair<>(v_solucion.get(i),distanciasElemento(v_solucion.get(i)));
+            v_distancias.add(añadir);
+        }
+       v_distancias.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
+    }
+    
+    private boolean intercambiar(Integer seleccionado, Integer añadir, ArrayList<Integer> solucion_temp){
+        solucion_temp.remove(seleccionado);
+        solucion_temp.add(añadir);
+        if (solucion_temp.size() == num_candidatos){
             return true;
-        else if (num_candidatos > solucion_actual.size()){
-            solucion_actual.add(seleccionado);
+        }else if (solucion_temp.size() < num_candidatos){
+            solucion_temp.add(seleccionado);
             return false;
         }else{
-            solucion_actual.remove(j);
+            solucion_temp.remove(añadir);
             return false;
         }
     }
@@ -277,13 +297,12 @@ public class BusquedaTabu extends Algoritmo{
      */
     private int generaVecino(HashSet<Integer> vecinos){
         ArrayList<Integer> v_n = new ArrayList<>(n);
-        for(int i = 0; i < v_n.size(); i++){
-            i = random.Randint(0, v_n.size()-1); //POSICION ALEATORIA ENTRE LOS ELEMENTOS QUE PUEDEN SER SELECCIONADOS PARA FORMAR EL SIGUIENTE VECINO.
-            if(!vecinos.contains(v_n.get(i)) && !lista_tabu.contains(v_n.get(i)) && !solucion_actual.contains(v_n.get(i))){
-                vecinos.add(i);
-                return i;  
-            }
+        int i = random.Randint(0, num_elementos-1); //ALEATOIO ENTRE LOS ELEMENTOS (0,499).
+        if(!vecinos.contains(i) && !lista_tabu.contains(i) && !solucion_actual.contains(i)){
+            vecinos.add(i);
+            return i;  
         }
+        
         return -1;
     }
     
