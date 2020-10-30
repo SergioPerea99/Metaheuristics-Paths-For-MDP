@@ -2,3 +2,7 @@ Archivos=GKD-c_1_n500_m50.txt GKD-c_2_n500_m50.txt GKD-c_3_n500_m50.txt SOM-b_11
 Algoritmos=Greedy
 Semillas=77433569 87654321 45637849 23405678 12345678
 MaximoIteraciones=50000
+Intentos_Reinicio=100
+Prob_Reduccion_Vecindario=0.99
+Prob_Intensificar_Diversificar=0.5
+tenencia_tabu=5

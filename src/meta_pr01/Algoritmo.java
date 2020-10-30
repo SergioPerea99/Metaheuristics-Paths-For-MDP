@@ -19,7 +19,6 @@ public abstract class Algoritmo {
     private ArchivoDatos archivo;
     
     /*ATRIBUTOS GENERALES PARA LOS ALGORITMOS*/
-    protected int max_iteraciones;
     protected double costeTotal;
     protected int num_elementos;
     protected int num_candidatos;
@@ -30,7 +29,6 @@ public abstract class Algoritmo {
     public Algoritmo(String[] _args,Integer num_archivo){
         config = new Configurador(_args[0]);
         archivo = new ArchivoDatos(getConfig().getArchivos().get(num_archivo));
-        max_iteraciones = config.getParametroExtra();
         num_elementos = archivo.getTamMatriz();
         num_candidatos = archivo.getTamSolucion();
         random = new Random();
@@ -118,13 +116,6 @@ public abstract class Algoritmo {
      */
     public HashSet<Integer> getN() {
         return n;
-    }
-
-    /**
-     * @return the max_iteraciones
-     */
-    public int getMax_iteraciones() {
-        return max_iteraciones;
     }
 
     /**
