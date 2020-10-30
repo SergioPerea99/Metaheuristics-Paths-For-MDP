@@ -17,9 +17,8 @@ import javafx.util.Pair;
 public class BusquedaTabu extends Algoritmo{
     
     /*ATRIBUTOS ESTÁTICOS*/
-    private static final int TENENCIA_TABU = 5;
-    private static final int INTENTOS_REINICIO = 100;
-    private static final double PORCENTAJE_REINICIO_MLP = 0.5; //Porcentaje que indica el corte para DIVERSIFICAR (< 50) o INTENSIFICAR (>= 50).
+    //private static final int TENENCIA_TABU = 5;
+    //private static final double PORCENTAJE_REINICIO_MLP = 0.5; //Porcentaje que indica el corte para DIVERSIFICAR (< 50) o INTENSIFICAR (>= 50).
     
     /*ESTRUCTURAS ADICIONALES DE LA BÚSQUEDA TABÚ NECESARIAS.*/
     private final LinkedList<Integer> lista_tabu;
@@ -78,10 +77,13 @@ public class BusquedaTabu extends Algoritmo{
         int it = 0, reinicio = 0; //IT para las iteraciones. REINICIO para controlar cuando llamar a diversificar/intensificar una nueva solución.
         int numVecinos, seleccionado, selecAux; //Control de número de vecinos, elemento a eliminar de la solución y elemento a insertar en la solución.
         double aux, costeAux; //Costes auxiliares de soluciones que se van generando.
+        System.out.println(n.size());
         
+        int entorno = M.size()*n.size(); //ENTORNO COMPLETO: |E| = M*(N-M).
+        int vecindario = entorno; //VECINDARIO QUE SE VA A IR GENERANDO POR ITERACION.
         
         /*HASTA QUE ITERE EL MAXIMO DE ITERACIONES INDICADAS.*/
-        while(it < getMax_iteraciones()){
+        while(it < getConfig().getMax_Iteraciones()){
             /*Selecciono el elemento que se sacará de la solución actual.*/
             seleccionado = puntoMenorAporte(comprobados);
             
@@ -92,7 +94,7 @@ public class BusquedaTabu extends Algoritmo{
             vecinos.clear(); //Limpiar vecinos generados.
             
             /*BUSQUEDA DE N VECINOS VÁLIDOS.*/
-            while(numVecinos < 10){
+            while(numVecinos < vecindario){
                 
                 /*Controlo que no intente añadir un vecino ya mirado, no sea tabú y que sea válido.*/
                 int nuevoVecino = generaVecino(vecinos);
@@ -112,6 +114,9 @@ public class BusquedaTabu extends Algoritmo{
                     ++numVecinos;
                 }
             }
+            System.out.println("NUMERO DE VECINOS GENERADOS: "+numVecinos);
+            if (vecindario > 10)
+                vecindario = (int)(vecindario * getConfig().getREDUCCION_VECINDARIO());
             
             n.remove(selecAux); //ELIMINAR ELEMENTO A GENERAR COMO VECINO EL INSERTADO EN LA SOLUCION ACTUAL.
             comprobados.clear(); //Limpiar el hashSet que indica qué elemento de menor aporte había sido ya seleccionado.
@@ -143,13 +148,13 @@ public class BusquedaTabu extends Algoritmo{
             }else
                 ++reinicio;
             
-            System.out.println("ITER "+it+" de "+getMax_iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+" con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
+            System.out.println("ITER "+it+" de "+getConfig().getMax_Iteraciones()+" :: Nº intentos "+reinicio+" :: "+coste_actual+" con "+solucion_actual.size()+"("+costeTotal+" con "+M.size()+")");
             it++;
             
             
             
             /*EN CASO DE GENERAR SOLUCIÓN ACTUAL TOTALMENTE NUEVA.*/
-            if(reinicio >= INTENTOS_REINICIO){
+            if(reinicio >= getConfig().getINTENTOS_REINICIO()){
                 reinicio = 0;
                 
                 /*Se usa en este caso, la memoria a largo plazo*/
@@ -248,7 +253,7 @@ public class BusquedaTabu extends Algoritmo{
         
         double aleatorio = random.Randfloat(0, 1); /*ALEATORIO DE PORCENTAJE PARA VER SI INTENSIFICA O DIVERSIFICA HACIA UNA NUEVA SOLUCION ACTUAL.*/
         int i = 0, j = num_elementos-1;
-        if(aleatorio < PORCENTAJE_REINICIO_MLP){ /*DIVERSIFICARÁ.*/
+        if(aleatorio < getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR()){ /*DIVERSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)
                 solucion_actual.add(mem_largo_plazo.get(i++).getKey());
             System.out.println("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
@@ -273,7 +278,7 @@ public class BusquedaTabu extends Algoritmo{
     private int generaVecino(HashSet<Integer> vecinos){
         ArrayList<Integer> v_n = new ArrayList<>(n);
         for(int i = 0; i < v_n.size(); i++){
-            i = random.Randint(0, v_n.size()-1); //ALEATORIO ENTRE LOS ELEMENTOS QUE PUEDEN SER SELECCIONADOS PARA FORMAR EL SIGUIENTE VECINO.
+            i = random.Randint(0, v_n.size()-1); //POSICION ALEATORIA ENTRE LOS ELEMENTOS QUE PUEDEN SER SELECCIONADOS PARA FORMAR EL SIGUIENTE VECINO.
             if(!vecinos.contains(v_n.get(i)) && !lista_tabu.contains(v_n.get(i)) && !solucion_actual.contains(v_n.get(i))){
                 vecinos.add(i);
                 return i;  
@@ -290,7 +295,7 @@ public class BusquedaTabu extends Algoritmo{
     private void inicializarMemorias(){
         /*LISTA TABÚ.*/
         lista_tabu.clear();
-        for (int i = 0; i < TENENCIA_TABU; i++) {
+        for (int i = 0; i < getConfig().getTENENCIA_TABU(); i++) {
             lista_tabu.add(-1);
         }
         

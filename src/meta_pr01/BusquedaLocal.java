@@ -56,16 +56,16 @@ public class BusquedaLocal extends Algoritmo{
         double aux;
         
         //1 bucle: Por si debe de comprobar con los 50 puntos seleccionados escogiendo del menor al mayor en coste.
-        while(it < getMax_iteraciones() && !fin){
+        while(it < getConfig().getMax_Iteraciones() && !fin){
             seleccionado = puntoMenorAporte(comprobados, v_M);
             
             //2 bucle: Busqueda de un punto no seleccionado que supere al punto de menor coste encontrado en este momento.
             fin = true;
-            for(int j = 0; j < v_n.size() && fin && it < getMax_iteraciones(); j++){
+            for(int j = 0; j < v_n.size() && fin && it < getConfig().getMax_Iteraciones(); j++){
                 
                 aux = factorizacion(seleccionado,v_n.get(j),v_n,v_M);
                 
-                System.out.println("ITERACIONES: "+it+" de "+getMax_iteraciones()+" :: "+costeTotal);
+                System.out.println("ITERACIONES: "+it+" de "+getConfig().getMax_Iteraciones()+" :: "+costeTotal);
                 ++it;
                 
                 /*Comprobación de si mejora o no la solución actual.*/
