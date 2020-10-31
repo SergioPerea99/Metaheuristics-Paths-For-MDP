@@ -54,10 +54,10 @@ public class META_PR01 {
                         greedy.algoritmoGreedy();
                         fin = new Date();
                         ms = fin.getTime()-inicio.getTime();
-                        System.out.println(ms+" milisegundos.");
                         System.out.println(greedy.getM());
                         ArrayList<Integer> v_M = new ArrayList<>(greedy.getM());
                         System.out.println(greedy.costeSolucion(v_M));
+                        System.out.println(ms+" milisegundos.");
                         break;
 
                     case "busqueda local":
@@ -67,9 +67,9 @@ public class META_PR01 {
                         b_local.algBusquedaLocal();
                         fin = new Date();
                         ms = fin.getTime()-inicio.getTime();
-                        System.out.println(ms+" milisegundos.");
                         System.out.println(b_local.getM());
                         System.out.println(b_local.getCoste());
+                        System.out.println(ms+" milisegundos.");
                         break;
 
                     case "busqueda tabu":

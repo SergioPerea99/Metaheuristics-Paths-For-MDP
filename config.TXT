@@ -4,5 +4,6 @@ Semillas=77433569 87654321 45637849 23405678 12345678
 MaximoIteraciones=50000
 Intentos_Reinicio=100
 Prob_Reduccion_Vecindario=0.99
+Minimo_Vecinos=10
 Prob_Intensificar_Diversificar=0.5
 tenencia_tabu=5

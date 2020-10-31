@@ -6,7 +6,6 @@
 package meta_pr01;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import javafx.util.Pair;
 
 /**
@@ -40,21 +39,28 @@ public class BusquedaLocal extends Algoritmo{
 
     }
     
+    /**
+     * @brief Búsqueda local del primer mejor.
+     * @post Búsqueda local del primero mejor; es decir, recorre el vecindario de forma que si encuentra 
+     * un vecino que mejore a la solución entonces se realiza el movimiento hacia ese vecino y se vuelve a empezar
+     * el proceso de encontrar un vecino que mejore. En caso de recorrer el vecindario y no mejorar, entonces acabará
+     * dicha búsqueda.
+     */
     public void algBusquedaLocal(){
 
         
         /*Inicialización de estructuras y variables necesarias.*/
-        ArrayList<Integer> v_M = new ArrayList<>(M);
-        ArrayList<Integer> v_n = new ArrayList<>(n);
-        ArrayList<Pair<Integer,Double>> v_distancias = new ArrayList<>();     
+        ArrayList<Integer> v_M = new ArrayList<>(M); //ArrayList del conjunto de elementos que forman la SOLUCIÓN.
+        ArrayList<Integer> v_n = new ArrayList<>(n); //ArrayList del conjunto de elementos que NO forman parte de la solución.
+        ArrayList<Pair<Integer,Double>> v_distancias = new ArrayList<>(); //ArrayList ordenado de las distancias de menor a mayor aporte de los elementos de la solución respecto a los demás.
         
-        /*GENERO EL VALOR DE LA SOLUCION INICIAL VÁLIDA*/
-        costeTotal = costeSolucion(v_M);
         
-        int seleccionado;
-        int it = 0;
-        boolean fin = false;
-        double aux;
+        costeTotal = costeSolucion(v_M); /*GENERO EL VALOR DE LA SOLUCION INICIAL */
+        
+        int seleccionado; // Elemento seleccionado a ser eliminado de la solución.
+        int it = 0; //Contador de iteraciones.
+        boolean fin = false; //Booleano que representa si hay mejora o no (Controla el estancamiento de la busqueda local).
+        double aux; //Valor auxiliar que devuelve el método de factorización.
         
         
         while(it < getConfig().getMax_Iteraciones() && !fin){

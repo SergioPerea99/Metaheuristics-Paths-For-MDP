@@ -6,7 +6,6 @@
 package meta_pr01;
 
 import java.util.HashSet;
-//import java.util.Random;
 
 
 /**
@@ -18,7 +17,7 @@ public class Greedy extends Algoritmo{
     /*---------------- MÉTODOS PÚBLICOS ---------------*/
     
     /**
-     * @Constructor del GREEDY.
+     * @brief Constructor parametrizado.
      * @post Creamos el greedy a partir de la superclase algoritmo que nos proporciona todos los datos
      * de los archivos necesarios: matriz de datos, hashSet de solución candidata, numero de candidatos...
      * @param args Parametro necesario para la posible lectura en la clase abstracta de los datos.
@@ -35,13 +34,12 @@ public class Greedy extends Algoritmo{
     }
     
     /**
-     * @brief Algoritmo Greedy para MDP.
+     * @brief Algoritmo Greedy.
      * @post A partir de un elemento random, se busca el siguiente elemento cuya
      * suma de sus distancias con respecto a los puntos seleccionados sea mayor que 
      * los demás elementos aún no seleccionados con los seleccionados.
-     * @return HashSet correspondiente a la solución candidata final.
      */
-    public HashSet<Integer> algoritmoGreedy(){
+    public void algoritmoGreedy(){
         
         //Primer bucle necesario para acabar cuando se haya llenado el vector Solución.
         while (M.size() < getNum_candidatos()){
@@ -54,14 +52,12 @@ public class Greedy extends Algoritmo{
                     elem_seleccionado = j;
                 }
             }
-            //Añadimos el elemento que se necesita en la solucion candidata y
-            //lo quitamos de los no candidatos.
+            
             M.add(elem_seleccionado);
             n.remove(elem_seleccionado);
 
         }
         
-        return M;
     }
 
 }
