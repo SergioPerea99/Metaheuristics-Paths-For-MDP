@@ -192,27 +192,7 @@ public class BusquedaTabu extends Algoritmo{
     }
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
-    
-    private int puntoMenorAporte(HashSet<Integer> comprobados) {
-        ArrayList<Integer> solucion_temp = new ArrayList<>(solucion_actual);
-        double dist_punto;
-        int pos = -1;
-        double menorCoste = distanciasElemento(solucion_temp.get(0));
-        for(int i = 1; i < solucion_temp.size(); i++){
-            dist_punto = distanciasElemento(solucion_temp.get(i));
-            if(menorCoste > dist_punto && !comprobados.contains(solucion_temp.get(i))){
-                menorCoste = dist_punto;
-                pos = i;
-            }
-        }
-        if (pos != -1){
-            comprobados.add(solucion_temp.get(pos));
-            return solucion_temp.get(pos);
-        }
-        comprobados.add(solucion_temp.get(0));
-        return solucion_temp.get(0);
-    }
-    
+
     private void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias){
         v_distancias.clear();
         ArrayList<Integer> v_solucion = new ArrayList<>(solucion_actual);
