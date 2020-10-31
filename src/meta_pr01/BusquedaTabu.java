@@ -16,20 +16,14 @@ import javafx.util.Pair;
  */
 public class BusquedaTabu extends Algoritmo{
     
-    /*ATRIBUTOS ESTÁTICOS*/
-    //private static final int TENENCIA_TABU = 5;
-    //private static final double PORCENTAJE_REINICIO_MLP = 0.5; //Porcentaje que indica el corte para DIVERSIFICAR (< 50) o INTENSIFICAR (>= 50).
-    
     /*ESTRUCTURAS ADICIONALES DE LA BÚSQUEDA TABÚ NECESARIAS.*/
     private final LinkedList<Integer> lista_tabu;
-    private ArrayList<Pair<Integer,Integer>> mem_largo_plazo;
+    private final ArrayList<Pair<Integer,Integer>> mem_largo_plazo;
     
     /*ATRIBUTOS DE LA MEJOR SOLUCIÓN ENCONTRADA.*/
     private double coste_actual;
-    private HashSet<Integer> solucion_actual;
+    private final HashSet<Integer> solucion_actual;
 
-    
-    
     /**
      * @brief Constructor parametrizado.
      * @param args
@@ -63,6 +57,13 @@ public class BusquedaTabu extends Algoritmo{
     
     
     
+    /**
+     * @brief Búsqueda Tabú.
+     * @post Búsqueda de una solución óptima a partir de una solución inicial, una lista tabú de elementos sacados de la solución
+     * recientemente y una memoria a largo plazo que indica las frecuencias de los elementos en el conjunto de la solución.
+     * A partir de un número de intentos de mejora a la mejor Solución encontrada en todo el algoritmo, se realiza un reinicio del
+     * algoritmo desde un conjunto de elementos para la solución generado a partir de la estructura de frecuencias.
+     */
     public void algBusquedaTabu(){
 
         /*Inicialización de estructuras y variables necesarias.*/
