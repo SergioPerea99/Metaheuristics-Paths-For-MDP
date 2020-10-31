@@ -159,7 +159,7 @@ public class BusquedaTabu extends Algoritmo{
             }else
                 ++reinicio;
             
-            System.out.println("ITER "+it+" ("+getConfig().getMax_Iteraciones()+") :: "+vecindario+" vecinos generados :: Nº intentos "+reinicio+" :: Coste actual -> "+coste_actual+"("+costeTotal+" con "+M.size()+" elementos).");
+            System.out.println("ITER "+it+" ("+getConfig().getMax_Iteraciones()+") :: "+vecindario+" vecinos :: Nº intentos "+reinicio+" :: Coste actual -> "+coste_actual+"("+costeTotal+" con "+M.size()+" elementos).");
             it++;
             
             
@@ -192,7 +192,8 @@ public class BusquedaTabu extends Algoritmo{
     }
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
-
+    
+    //TODO: HACER MÉTODO COMO MÉTODO DEL PADRE.
     private void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias){
         v_distancias.clear();
         ArrayList<Integer> v_solucion = new ArrayList<>(solucion_actual);
@@ -204,6 +205,17 @@ public class BusquedaTabu extends Algoritmo{
        v_distancias.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
     }
     
+    /**
+     * @brief Método de intercambio de elementos.
+     * @post A partir de una solución temporal, se realizan los cambios entre el elemento correspondiente
+     * al parametro seleccionado y el parametro añadir. En caso de que dicho intercambio conlleve no mantener
+     * los elementos que debe de tener una solución, entonces deshace el intercambio y devuelve false. Si todo 
+     * funciona bien, devolverá un true.
+     * @param seleccionado
+     * @param añadir
+     * @param solucion_temp
+     * @return Booleano que indica si se ha hecho un intercambio correcto o no.
+     */
     private boolean intercambiar(Integer seleccionado, Integer añadir, ArrayList<Integer> solucion_temp){
         solucion_temp.remove(seleccionado);
         solucion_temp.add(añadir);
@@ -218,6 +230,12 @@ public class BusquedaTabu extends Algoritmo{
         }
     }
     
+    /**
+     * @brief Función de factorización.
+     * @param seleccionado
+     * @param j
+     * @return 
+     */
     private double factorizacion(int seleccionado,int j){
         ArrayList<Integer> v_M = new ArrayList<>(solucion_actual);
         double costeMenor = 0, costeMayor =0;
@@ -238,6 +256,7 @@ public class BusquedaTabu extends Algoritmo{
 
         return coste_actual + costeMayor-costeMenor;
         
+        //TODO: CONVERTIRLO A MÉTODO DE LA CLASE PADRE.
     }
     
     /***
@@ -256,16 +275,19 @@ public class BusquedaTabu extends Algoritmo{
         if(aleatorio < getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR()){ /*DIVERSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)
                 solucion_actual.add(mem_largo_plazo.get(i++).getKey());
-            System.out.println("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
+            System.out.print("DIVERSIFICACIÓN (SOLUCION ACTUAL)");
         }else{ /*INTENSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)    
                 solucion_actual.add(mem_largo_plazo.get(j--).getKey());
-            System.out.println("INTENSIFICACIÓN (SOLUCION ACTUAL) --> tamaño solución actual : "+solucion_actual.size());
+            System.out.print("INTENSIFICACIÓN (SOLUCION ACTUAL)");
         }
         
         ArrayList<Integer> aux = new ArrayList<>(solucion_actual);
         coste_actual = costeSolucion(aux); //OPERACION DEL NUEVO COSTE DE LA SOLUCION ACTUAL.
+        System.out.println(" :: coste actual --> "+coste_actual);
         aux.sort((o1,o2) -> o1.compareTo(o2));
+        
+        //TODO: HACER QUE LA PROB_INTENSIFICAR_DIVERSIFICAR VAYA DISMINUYENDO PARA QUE HAYA MAS PROBABILIDAD DE QUE INTENSIFIQUE A QUE DIVERSIFIQUE.
     } 
     
     /**
@@ -276,9 +298,10 @@ public class BusquedaTabu extends Algoritmo{
      * @return Integer que indica el nuevo vecino generado.
      */
     private int generaVecino(HashSet<Integer> vecinos){
-        ArrayList<Integer> v_n = new ArrayList<>(n);
+        
         int i = random.Randint(0, num_elementos-1); //ALEATOIO ENTRE LOS ELEMENTOS (0,499).
-        if(!vecinos.contains(i) && !lista_tabu.contains(i) && !solucion_actual.contains(i)){
+        /*ALEATORIO QUE NO SEA VECINO GENERADO ANTERIORMENTE, QUE NO SEA UN VECINO TABÚ Y QUE DICHO ELEMENTO NO SE ENCUENTRE YA EN LA SOLUCIÓN.*/
+        if(!vecinos.contains(i) && !lista_tabu.contains(i) && !solucion_actual.contains(i)){ 
             vecinos.add(i);
             return i;  
         }

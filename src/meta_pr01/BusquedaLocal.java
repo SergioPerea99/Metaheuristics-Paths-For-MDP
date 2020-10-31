@@ -100,6 +100,17 @@ public class BusquedaLocal extends Algoritmo{
         return v_M.get(0);
     }
     
+    /**
+     * @brief Método de intercambio de elementos.
+     * @post Se realiza el intercambio entre elementos indicados como parámetros
+     * para el HashSet de la solución, el ArrayList que simula a la solución Hashset.
+     * A la misma vez, se hace el intercambio inverso al HashSet de los elementos no seleccionados
+     * en la solución y en su ArrayList correspondiente.
+     * @param seleccionado
+     * @param j
+     * @param v_n
+     * @param v_M 
+     */
     private void intercambiar(Integer seleccionado, Integer j,ArrayList<Integer> v_n, ArrayList<Integer> v_M){
         v_M.remove(seleccionado);
         v_M.add(j);
@@ -113,7 +124,7 @@ public class BusquedaLocal extends Algoritmo{
     
     private double factorizacion(int seleccionado,int j,ArrayList<Integer> v_n, ArrayList<Integer> v_M ){
         double costeMenor = 0, costeMayor =0;
-        for (int k=0; k < M.size(); k++){
+        for (int k=0; k < v_M.size(); k++){
             if (v_M.get(k)!= seleccionado){
                 if (getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)] != 0)
                     costeMenor += getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)];
