@@ -51,7 +51,7 @@ public class BusquedaLocal extends Algoritmo{
         /*GENERO EL VALOR DE LA SOLUCION INICIAL VÁLIDA*/
         costeTotal = costeSolucion(v_M);
         
-        Integer seleccionado;
+        int seleccionado;
         int it = 0;
         boolean fin = false;
         double aux;
@@ -88,23 +88,7 @@ public class BusquedaLocal extends Algoritmo{
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
     
-    private int puntoMenorAporte(HashSet<Integer> comprobados, ArrayList<Integer> v_M){
-        double dist_punto;
-        int pos = -1;
-        double menorCoste = distanciasElemento(v_M.get(0));
-        for(int i = 1; i < v_M.size(); i++){
-            dist_punto = distanciasElemento(v_M.get(i));
-            if(menorCoste > dist_punto && !comprobados.contains(v_M.get(i))){
-                menorCoste = dist_punto;
-                pos = i;
-            }
-        }
-        if (pos != -1){
-            comprobados.add(v_M.get(pos));
-            return v_M.get(pos);
-        }
-        return v_M.get(0);
-    }
+    
     
     /**
      * @brief Método de intercambio de elementos.
@@ -126,18 +110,6 @@ public class BusquedaLocal extends Algoritmo{
         v_n.add(seleccionado);
         n.remove(j);
         n.add(seleccionado);
-    }
-    
-    
-    private void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias, HashSet<Integer> solucion){
-        v_distancias.clear();
-        ArrayList<Integer> v_solucion = new ArrayList<>(solucion);
-        Pair<Integer,Double> añadir;
-        for (int i = 0; i < v_solucion.size(); i++){
-            añadir = new Pair<>(v_solucion.get(i),distanciasElemento(v_solucion.get(i)));
-            v_distancias.add(añadir);
-        }
-       v_distancias.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
     }
     
 }

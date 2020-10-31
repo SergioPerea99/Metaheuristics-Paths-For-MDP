@@ -94,7 +94,7 @@ public class BusquedaTabu extends Algoritmo{
             solucion_temp.clear();
             solucion_temp = new ArrayList<>(solucion_actual);
 
-            ordenacionMenorAporte(v_distancias); //Ordenacion del vector de aportes.
+            ordenacionMenorAporte(v_distancias,solucion_actual); //Ordenacion del vector de aportes.
             
             /*BUSQUEDA DE N VECINOS VÁLIDOS.*/
             for(int i =0; i < M.size() && numVecinos < vecindario; i++){
@@ -193,17 +193,6 @@ public class BusquedaTabu extends Algoritmo{
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
     
-    //TODO: HACER MÉTODO COMO MÉTODO DEL PADRE.
-    private void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias){
-        v_distancias.clear();
-        ArrayList<Integer> v_solucion = new ArrayList<>(solucion_actual);
-        Pair<Integer,Double> añadir;
-        for (int i = 0; i < v_solucion.size(); i++){
-            añadir = new Pair<>(v_solucion.get(i),distanciasElemento(v_solucion.get(i)));
-            v_distancias.add(añadir);
-        }
-       v_distancias.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
-    }
     
     /**
      * @brief Método de intercambio de elementos.

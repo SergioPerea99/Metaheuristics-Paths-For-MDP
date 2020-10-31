@@ -7,6 +7,7 @@ package meta_pr01;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import javafx.util.Pair;
 
 /**
  *
@@ -100,6 +101,17 @@ public abstract class Algoritmo {
         return coste_actual + costeMayor-costeMenor;
         
         
+    }
+    
+    protected void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias, HashSet<Integer> solucion){
+        v_distancias.clear();
+        ArrayList<Integer> v_solucion = new ArrayList<>(solucion);
+        Pair<Integer,Double> añadir;
+        for (int i = 0; i < v_solucion.size(); i++){
+            añadir = new Pair<>(v_solucion.get(i),distanciasElemento(v_solucion.get(i)));
+            v_distancias.add(añadir);
+        }
+       v_distancias.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
     }
 
     
