@@ -55,7 +55,7 @@ public class BusquedaTabu extends Algoritmo{
         /*INSTANCIO E INICIALIZA LA LISTA TABÚ Y MEMORIA A LARGO PLAZO.*/
         lista_tabu = new LinkedList<>();
         mem_largo_plazo = new ArrayList<>(num_elementos);
-        iniciarMemorias();
+        limpiarMemorias();
 
         solucion_actual = new HashSet<>(M);  
 
@@ -163,8 +163,9 @@ public class BusquedaTabu extends Algoritmo{
                 reinicio = 0;
 
                 solucionPorFrecuencias(); //GENERA UNA SOLUCION ACTUAL COMPLETAMENTE NUEVA A PARTIR DE LA MEMORIA A LARGO PLAZO.
-                iniciarMemorias(); //REINICIO DE LAS MEMORIAS.
-
+                limpiarMemorias(); //REINICIO DE LAS MEMORIAS.
+                vecindario = entorno; //REINICIO DE NUEVO LOS VECINOS A GENERAR A PARTIR DE UNA SOLUCIÓN.
+                
                 if(costeTotal < coste_actual){ /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
                     
                     M.clear();
@@ -228,7 +229,8 @@ public class BusquedaTabu extends Algoritmo{
         if(aleatorio < getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR()){ /*DIVERSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)
                 solucion_actual.add(mem_largo_plazo.get(i++).getKey());
-            System.out.print("DIVERSIFICACIÓN (SOLUCION ACTUAL)");
+            System.out.print("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> "+getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR());
+            //getConfig().setPROB_INTENSIFICAR_DIVERSIFICAR(getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR() - 0.01);
         }else{ /*INTENSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)    
                 solucion_actual.add(mem_largo_plazo.get(j--).getKey());
@@ -240,7 +242,6 @@ public class BusquedaTabu extends Algoritmo{
         System.out.println(" :: coste actual --> "+coste_actual);
         aux.sort((o1,o2) -> o1.compareTo(o2));
         
-        //TODO: HACER QUE LA PROB_INTENSIFICAR_DIVERSIFICAR VAYA DISMINUYENDO PARA QUE HAYA MAS PROBABILIDAD DE QUE INTENSIFIQUE A QUE DIVERSIFIQUE.
     } 
     
     /**
@@ -267,7 +268,7 @@ public class BusquedaTabu extends Algoritmo{
      * @brief Iniciar/Reiniciar valores de memorias.
      * @post Inicia/Reinicia los valores de la lista tabú y de la estructura que mantiene la memoria a largo plazo.
      */
-    private void iniciarMemorias(){
+    private void limpiarMemorias(){
         /*LISTA TABÚ.*/
         lista_tabu.clear();
         for (int i = 0; i < getConfig().getTENENCIA_TABU(); i++) {
