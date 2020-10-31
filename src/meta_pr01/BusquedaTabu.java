@@ -72,7 +72,7 @@ public class BusquedaTabu extends Algoritmo{
         costeTotal = costeSolucion(solucion_temp); //MEJOR COSTE ENCONTRADO. SIENDO M LA MEJOR SOLUCION ENCONTRADA.
         coste_actual = costeTotal; //COSTE ACTUAL. SIENDO COSTE_ACTUAL EL MEJOR COSTE ACTUAL ENCONTRADO.
 
-        HashSet<Integer> comprobados = new HashSet<>(); //NO SELECCIONAR ELEMENTO DE MENOR VALOR YA COMPROBADO.
+        //HashSet<Integer> comprobados = new HashSet<>(); //NO SELECCIONAR ELEMENTO DE MENOR VALOR YA COMPROBADO.
         HashSet<Integer> vecinos = new HashSet<>(); //NO COGER MISMOS VECINOS.
         
         int it = 0, reinicio = 0; //IT para las iteraciones. REINICIO para controlar cuando llamar a diversificar/intensificar una nueva solución.
