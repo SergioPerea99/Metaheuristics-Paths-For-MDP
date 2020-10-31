@@ -63,7 +63,7 @@ public class BusquedaLocal extends Algoritmo{
             fin = true;
             for(int j = 0; j < v_n.size() && fin && it < getConfig().getMax_Iteraciones(); j++){
                 
-                aux = factorizacion(seleccionado,v_n.get(j),v_n,v_M);
+                aux = factorizacion(seleccionado,v_n.get(j),M,costeTotal);
                 
                 System.out.println("ITERACIONES: "+it+" de "+getConfig().getMax_Iteraciones()+" :: "+costeTotal);
                 ++it;
@@ -122,24 +122,5 @@ public class BusquedaLocal extends Algoritmo{
         n.add(seleccionado);
     }
     
-    private double factorizacion(int seleccionado,int j,ArrayList<Integer> v_n, ArrayList<Integer> v_M ){
-        double costeMenor = 0, costeMayor =0;
-        for (int k=0; k < v_M.size(); k++){
-            if (v_M.get(k)!= seleccionado){
-                if (getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)] != 0)
-                    costeMenor += getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)];
-                else
-                    costeMenor += getArchivo().getMatrizDatos()[v_M.get(k)][seleccionado];
-            }
-            if (v_M.get(k)!= seleccionado){
-                if(getArchivo().getMatrizDatos()[j][v_M.get(k)] != 0)
-                    costeMayor+= getArchivo().getMatrizDatos()[j][v_M.get(k)];
-                else
-                    costeMayor+= getArchivo().getMatrizDatos()[v_M.get(k)][j];
-            }
-        }
-
-        return costeTotal + costeMayor-costeMenor;
-        
-    }
+    
 }

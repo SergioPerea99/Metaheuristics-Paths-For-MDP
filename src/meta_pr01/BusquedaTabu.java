@@ -107,7 +107,7 @@ public class BusquedaTabu extends Algoritmo{
 
                     //System.out.print(nuevoVecino+" ");
                     if(nuevoVecino != -1){ /*EN CASO DE SER VECINO VÁLIDO*/
-                        aux = factorizacion(seleccionado,nuevoVecino);
+                        aux = factorizacion(seleccionado,nuevoVecino,solucion_actual,coste_actual);
                         /*LA PRIMERA VEZ ENTRA SEGURO, YA QUE ES EL MEJOR VECINO ENCONTRADO HASTA EL MOMENTO.*/
                         if(costeAux < aux){ 
                             if(!intercambiar(seleccionado,nuevoVecino,solucion_temp))
@@ -230,34 +230,7 @@ public class BusquedaTabu extends Algoritmo{
         }
     }
     
-    /**
-     * @brief Función de factorización.
-     * @param seleccionado
-     * @param j
-     * @return 
-     */
-    private double factorizacion(int seleccionado,int j){
-        ArrayList<Integer> v_M = new ArrayList<>(solucion_actual);
-        double costeMenor = 0, costeMayor =0;
-        for (int k=0; k < v_M.size(); k++){
-            if (v_M.get(k)!= seleccionado){
-                if (getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)] != 0)
-                    costeMenor += getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)];
-                else
-                    costeMenor += getArchivo().getMatrizDatos()[v_M.get(k)][seleccionado];
-            }
-            if (v_M.get(k)!= seleccionado){
-                if(getArchivo().getMatrizDatos()[j][v_M.get(k)] != 0)
-                    costeMayor+= getArchivo().getMatrizDatos()[j][v_M.get(k)];
-                else
-                    costeMayor+= getArchivo().getMatrizDatos()[v_M.get(k)][j];
-            }
-        }
-
-        return coste_actual + costeMayor-costeMenor;
-        
-        //TODO: CONVERTIRLO A MÉTODO DE LA CLASE PADRE.
-    }
+    
     
     /***
      * @brief Actualizar solución actual por estancamiento.

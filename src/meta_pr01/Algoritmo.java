@@ -72,6 +72,35 @@ public abstract class Algoritmo {
                 sumaDistancias += archivo.getMatrizDatos()[elem][i];
         return sumaDistancias;
     }
+    
+    /**
+     * @brief Función de factorización.
+     * @param seleccionado
+     * @param j
+     * @return 
+     */
+    protected double factorizacion(int seleccionado,int j,HashSet<Integer> solucion_actual, double coste_actual){
+        ArrayList<Integer> v_M = new ArrayList<>(solucion_actual);
+        double costeMenor = 0, costeMayor =0;
+        for (int k=0; k < v_M.size(); k++){
+            if (v_M.get(k)!= seleccionado){
+                if (getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)] != 0)
+                    costeMenor += getArchivo().getMatrizDatos()[seleccionado][v_M.get(k)];
+                else
+                    costeMenor += getArchivo().getMatrizDatos()[v_M.get(k)][seleccionado];
+            }
+            if (v_M.get(k)!= seleccionado){
+                if(getArchivo().getMatrizDatos()[j][v_M.get(k)] != 0)
+                    costeMayor+= getArchivo().getMatrizDatos()[j][v_M.get(k)];
+                else
+                    costeMayor+= getArchivo().getMatrizDatos()[v_M.get(k)][j];
+            }
+        }
+
+        return coste_actual + costeMayor-costeMenor;
+        
+        
+    }
 
     
     /*------ GETTERS ------*/
@@ -124,6 +153,8 @@ public abstract class Algoritmo {
     public double getCoste() {
         return costeTotal;
     }
+    
+    
     
     
 }
