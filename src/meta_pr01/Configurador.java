@@ -23,6 +23,7 @@ public class Configurador {
     private double REDUCCION_VECINDARIO;
     private Integer TENENCIA_TABU;
     private double PROB_INTENSIFICAR_DIVERSIFICAR;
+    private Integer MIN_VECINOS;
     
     public Configurador(String ruta){
         archivos = new ArrayList<>();
@@ -71,9 +72,15 @@ public class Configurador {
                     case "Prob_Reduccion_Vecindario":
                         REDUCCION_VECINDARIO = Double.parseDouble(split[1]);
                         break;
+                        
+                    case "Minimo_Vecinos":
+                        MIN_VECINOS = Integer.parseInt(split[1]);
+                        break;
+                        
                     case "tenencia_tabu":
                         TENENCIA_TABU = Integer.parseInt(split[1]);
                         break;
+                        
                     case "Prob_Intensificar_Diversificar":
                         PROB_INTENSIFICAR_DIVERSIFICAR = Double.parseDouble(split[1]);
                         break;
@@ -181,6 +188,20 @@ public class Configurador {
      */
     public double getPROB_INTENSIFICAR_DIVERSIFICAR() {
         return PROB_INTENSIFICAR_DIVERSIFICAR;
+    }
+
+    /**
+     * @param PROB_INTENSIFICAR_DIVERSIFICAR the PROB_INTENSIFICAR_DIVERSIFICAR to set
+     */
+    public void setPROB_INTENSIFICAR_DIVERSIFICAR(double PROB_INTENSIFICAR_DIVERSIFICAR) {
+        this.PROB_INTENSIFICAR_DIVERSIFICAR = PROB_INTENSIFICAR_DIVERSIFICAR;
+    }
+
+    /**
+     * @return the MIN_VECINOS
+     */
+    public Integer getMIN_VECINOS() {
+        return MIN_VECINOS;
     }
     
     

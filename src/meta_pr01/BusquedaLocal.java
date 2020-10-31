@@ -6,7 +6,7 @@
 package meta_pr01;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import javafx.util.Pair;
 
 /**
  *
@@ -39,66 +39,62 @@ public class BusquedaLocal extends Algoritmo{
 
     }
     
+    /**
+     * @brief Búsqueda local del primer mejor.
+     * @post Búsqueda local del primero mejor; es decir, recorre el vecindario de forma que si encuentra 
+     * un vecino que mejore a la solución entonces se realiza el movimiento hacia ese vecino y se vuelve a empezar
+     * el proceso de encontrar un vecino que mejore. En caso de recorrer el vecindario y no mejorar, entonces acabará
+     * dicha búsqueda.
+     */
     public void algBusquedaLocal(){
 
         
         /*Inicialización de estructuras y variables necesarias.*/
-        ArrayList<Integer> v_M = new ArrayList<>(M);
-        ArrayList<Integer> v_n = new ArrayList<>(n);
-        HashSet<Integer> comprobados = new HashSet<>();     
+        ArrayList<Integer> v_M = new ArrayList<>(M); //ArrayList del conjunto de elementos que forman la SOLUCIÓN.
+        ArrayList<Integer> v_n = new ArrayList<>(n); //ArrayList del conjunto de elementos que NO forman parte de la solución.
+        ArrayList<Pair<Integer,Double>> v_distancias = new ArrayList<>(); //ArrayList ordenado de las distancias de menor a mayor aporte de los elementos de la solución respecto a los demás.
         
-        /*GENERO EL VALOR DE LA SOLUCION INICIAL VÁLIDA*/
-        costeTotal = costeSolucion(v_M);
         
-        Integer seleccionado = -1;
-        int it = 0;
-        boolean fin = false;
-        double aux;
+        costeTotal = costeSolucion(v_M); /*GENERO EL VALOR DE LA SOLUCION INICIAL */
         
-        //1 bucle: Por si debe de comprobar con los 50 puntos seleccionados escogiendo del menor al mayor en coste.
+        int seleccionado; // Elemento seleccionado a ser eliminado de la solución.
+        int it = 0; //Contador de iteraciones.
+        boolean fin = false; //Booleano que representa si hay mejora o no (Controla el estancamiento de la busqueda local).
+        double aux; //Valor auxiliar que devuelve el método de factorización.
+        
+        
         while(it < getConfig().getMax_Iteraciones() && !fin){
-            seleccionado = puntoMenorAporte(comprobados, v_M);
             
-            //2 bucle: Busqueda de un punto no seleccionado que supere al punto de menor coste encontrado en este momento.
+            ordenacionMenorAporte(v_distancias, M);
             fin = true;
-            for(int j = 0; j < v_n.size() && fin && it < getConfig().getMax_Iteraciones(); j++){
+            /*Por si debe de comprobar con los 50 puntos seleccionados escogiendo del menor al mayor en coste.*/
+            for(int i = 0; i < M.size() && it < getConfig().getMax_Iteraciones() && fin; i++){
                 
-                aux = factorizacion(seleccionado,v_n.get(j),M,costeTotal);
+                seleccionado = v_distancias.get(i).getKey();
                 
-                System.out.println("ITERACIONES: "+it+" de "+getConfig().getMax_Iteraciones()+" :: "+costeTotal);
-                ++it;
-                
-                /*Comprobación de si mejora o no la solución actual.*/
-                if(costeTotal < aux){
-                    intercambiar(seleccionado,v_n.get(j),v_n,v_M);
-                    costeTotal = aux;
-                    comprobados.clear();
-                    fin = false; 
+                //2 bucle: Busqueda de un punto no seleccionado que supere al punto de menor coste encontrado en este momento.             
+                for(int j = 0; j < v_n.size() && fin && it < getConfig().getMax_Iteraciones(); j++){
+
+                    aux = factorizacion(seleccionado,v_n.get(j),M,costeTotal);
+
+                    ++it;
+
+                    /*Comprobación de si mejora o no la solución actual.*/
+                    if(costeTotal < aux){
+                        intercambiar(seleccionado,v_n.get(j),v_n,v_M);
+                        costeTotal = aux;
+                        fin = false; 
+                    }
                 }
             }
+            System.out.println("ITERACIONES: "+it+" de "+getConfig().getMax_Iteraciones()+" :: "+costeTotal);
             
         }  
     }
     
     /*---------------- MÉTODOS PRIVADOS ---------------*/
     
-    private int puntoMenorAporte(HashSet<Integer> comprobados, ArrayList<Integer> v_M){
-        double dist_punto;
-        int pos = -1;
-        double menorCoste = distanciasElemento(v_M.get(0));
-        for(int i = 1; i < v_M.size(); i++){
-            dist_punto = distanciasElemento(v_M.get(i));
-            if(menorCoste > dist_punto && !comprobados.contains(v_M.get(i))){
-                menorCoste = dist_punto;
-                pos = i;
-            }
-        }
-        if (pos != -1){
-            comprobados.add(v_M.get(pos));
-            return v_M.get(pos);
-        }
-        return v_M.get(0);
-    }
+    
     
     /**
      * @brief Método de intercambio de elementos.
@@ -121,6 +117,5 @@ public class BusquedaLocal extends Algoritmo{
         n.remove(j);
         n.add(seleccionado);
     }
-    
     
 }

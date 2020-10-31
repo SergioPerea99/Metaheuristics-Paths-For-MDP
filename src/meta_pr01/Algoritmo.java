@@ -7,6 +7,7 @@ package meta_pr01;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import javafx.util.Pair;
 
 /**
  *
@@ -15,17 +16,23 @@ import java.util.HashSet;
 public abstract class Algoritmo {
     
     /*ATRIBUTOS PARA LA CARGA DE FICHEROS*/
-    private Configurador config;
-    private ArchivoDatos archivo;
+    private final Configurador config;
+    private final ArchivoDatos archivo;
     
     /*ATRIBUTOS GENERALES PARA LOS ALGORITMOS*/
-    protected double costeTotal;
-    protected int num_elementos;
-    protected int num_candidatos;
+    protected double costeTotal; // Coste de la solución.
+    protected int num_elementos; //Tamaño completo de elementos que pueden ser o no parte de la Solución.
+    protected int num_candidatos; //Tamaño que debe de ocupar el conjunto de elementos de la solución.
     protected Random random;
-    protected HashSet<Integer> M; //Vector solución candidata.
-    protected HashSet<Integer> n; //HashSet de no candidatos.
+    protected HashSet<Integer> M; //Conjunto de elementos que representa a la solución.
+    protected HashSet<Integer> n; //Conjunto de elementos que NO forman parte de la solución.
     
+    
+    /**
+     * @brief Constructor parametrizado.
+     * @param _args
+     * @param num_archivo 
+     */
     public Algoritmo(String[] _args,Integer num_archivo){
         config = new Configurador(_args[0]);
         archivo = new ArchivoDatos(getConfig().getArchivos().get(num_archivo));
@@ -39,8 +46,10 @@ public abstract class Algoritmo {
     }
     
     /**
+     * 
      * @brief Sumatoria del coste final.
      * @post La suma de todas las distancias de cada uno de los puntos con respecto a los demás puntos.
+     * @param v_M Conjunto de elementos que representa a la solución.
      * @return Sumatoria final.
      */
     public double costeSolucion(ArrayList<Integer> v_M){
@@ -74,13 +83,16 @@ public abstract class Algoritmo {
     }
     
     /**
-     * @brief Función de factorización.
-     * @param seleccionado
-     * @param j
-     * @return 
+     * @brief Método de factorización.
+     * @post Método de factorización que intercambia el valor entre 2 elementos seleccionados; es decir, una factorización 2-opt.
+     * @param seleccionado Elemento que se quiere eliminar de la solución.
+     * @param j Elemento que se quiere añadir en la solución.
+     * @param solucion Contiene el conjunto de elementos que forman una solución.
+     * @param coste_actual Coste de la solución.
+     * @return Double que indica el nuevo valor de la solución una vez hecha la factorización con "seleccionado" y "j".
      */
-    protected double factorizacion(int seleccionado,int j,HashSet<Integer> solucion_actual, double coste_actual){
-        ArrayList<Integer> v_M = new ArrayList<>(solucion_actual);
+    protected double factorizacion(int seleccionado,int j,HashSet<Integer> solucion, double coste_actual){
+        ArrayList<Integer> v_M = new ArrayList<>(solucion);
         double costeMenor = 0, costeMayor =0;
         for (int k=0; k < v_M.size(); k++){
             if (v_M.get(k)!= seleccionado){
@@ -100,6 +112,23 @@ public abstract class Algoritmo {
         return coste_actual + costeMayor-costeMenor;
         
         
+    }
+    
+    /**
+     * @brief Ordenación respecto Aporte/Elemento.
+     * @post Ordena el vector de aportes que representa cada elemento de la solución con respecto a los demás.
+     * @param v_distancias Contenedor Pair que indica el elemento y su aporte correspondiente.
+     * @param solucion Conjunto de elementos que representa a la solución.
+     */
+    protected void ordenacionMenorAporte(ArrayList<Pair<Integer,Double>> v_distancias, HashSet<Integer> solucion){
+        v_distancias.clear();
+        ArrayList<Integer> v_solucion = new ArrayList<>(solucion);
+        Pair<Integer,Double> añadir;
+        for (int i = 0; i < v_solucion.size(); i++){
+            añadir = new Pair<>(v_solucion.get(i),distanciasElemento(v_solucion.get(i)));
+            v_distancias.add(añadir);
+        }
+       v_distancias.sort((o1,o2) -> o1.getValue().compareTo(o2.getValue()));
     }
 
     
