@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [192, 322, 68, 6, 393, 13, 270, 398, 79, 16, 209, 19, 278, 214,
 
 COSTE SOLUCIÓN:  4631.0.
 
-DURACIÓN: 10975 milisegundos.
+DURACIÓN: 15147 milisegundos.
 

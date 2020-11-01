@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [64, 192, 2, 66, 67, 4, 133, 262, 71, 72, 73, 329, 266, 268, 20
 
 COSTE SOLUCIÓN:  4623.0.
 
-DURACIÓN: 16 milisegundos.
+DURACIÓN: 49 milisegundos.
 

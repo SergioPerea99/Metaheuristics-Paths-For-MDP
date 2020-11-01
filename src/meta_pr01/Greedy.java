@@ -29,7 +29,7 @@ public class Greedy extends Algoritmo{
         
         int puntoInicio = random.Randint(0,getNum_elementos()-1);      
         M.add(puntoInicio);
-        n.remove(puntoInicio);
+        N.remove(puntoInicio);
     }
     
     /**
@@ -53,7 +53,7 @@ public class Greedy extends Algoritmo{
             }
             
             M.add(elem_seleccionado);
-            n.remove(elem_seleccionado);
+            N.remove(elem_seleccionado);
 
         }
         

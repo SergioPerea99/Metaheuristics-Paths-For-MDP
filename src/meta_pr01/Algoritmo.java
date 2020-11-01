@@ -25,7 +25,7 @@ public abstract class Algoritmo {
     protected int num_candidatos; //Tamaño que debe de ocupar el conjunto de elementos de la solución.
     protected Random random;
     protected HashSet<Integer> M; //Conjunto de elementos que representa a la solución.
-    protected HashSet<Integer> n; //Conjunto de elementos que NO forman parte de la solución.
+    protected HashSet<Integer> N; //Conjunto de elementos que NO forman parte de la solución.
     
     
     /**
@@ -40,9 +40,9 @@ public abstract class Algoritmo {
         num_candidatos = archivo.getTamSolucion();
         random = new Random();
         M = new HashSet<>(num_candidatos);
-        n = new HashSet<>(num_elementos);
+        N = new HashSet<>(num_elementos);
         for (int i=0; i < num_elementos; i++)
-            n.add(i);
+            N.add(i);
     }
     
     /**
@@ -173,7 +173,7 @@ public abstract class Algoritmo {
      * @return the n
      */
     public HashSet<Integer> getN() {
-        return n;
+        return N;
     }
 
     /**

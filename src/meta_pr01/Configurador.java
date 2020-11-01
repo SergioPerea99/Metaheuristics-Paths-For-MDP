@@ -20,9 +20,9 @@ public class Configurador {
     private ArrayList<Long> semillas; //Para las diferentes semillas usadas.
     private Integer MAX_ITERACIONES;
     private Integer INTENTOS_REINICIO;
-    private double REDUCCION_VECINDARIO;
+    private Double REDUCCION_VECINDARIO;
     private Integer TENENCIA_TABU;
-    private double PROB_INTENSIFICAR_DIVERSIFICAR;
+    private Double PROB_INTENSIFICAR_DIVERSIFICAR;
     private Integer MIN_VECINOS;
     
     public Configurador(String ruta){

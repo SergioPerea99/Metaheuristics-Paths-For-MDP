@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [256, 1, 257, 132, 133, 262, 134, 7, 8, 266, 10, 11, 140, 13, 1
 
 COSTE SOLUCIÓN:  20717.0.
 
-DURACIÓN: 78 milisegundos.
+DURACIÓN: 93 milisegundos.
 

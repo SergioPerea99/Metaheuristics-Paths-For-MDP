@@ -33,7 +33,7 @@ public class BusquedaLocal extends Algoritmo{
         while (M.size() < getNum_candidatos()){
             punto = random.Randint(0, num_elementos-1);
             M.add(punto);
-            n.remove(punto);
+            N.remove(punto);
             ++i;
         }
 
@@ -51,7 +51,7 @@ public class BusquedaLocal extends Algoritmo{
         
         /*Inicialización de estructuras y variables necesarias.*/
         ArrayList<Integer> v_M = new ArrayList<>(M); //ArrayList del conjunto de elementos que forman la SOLUCIÓN.
-        ArrayList<Integer> v_n = new ArrayList<>(n); //ArrayList del conjunto de elementos que NO forman parte de la solución.
+        ArrayList<Integer> v_n = new ArrayList<>(N); //ArrayList del conjunto de elementos que NO forman parte de la solución.
         ArrayList<Pair<Integer,Double>> v_distancias = new ArrayList<>(); //ArrayList ordenado de las distancias de menor a mayor aporte de los elementos de la solución respecto a los demás.
         
         
@@ -114,8 +114,8 @@ public class BusquedaLocal extends Algoritmo{
         M.add(j);
         v_n.remove(j);
         v_n.add(seleccionado);
-        n.remove(j);
-        n.add(seleccionado);
+        N.remove(j);
+        N.add(seleccionado);
     }
     
 }

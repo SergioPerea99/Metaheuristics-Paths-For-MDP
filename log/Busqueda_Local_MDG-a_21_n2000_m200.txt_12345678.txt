@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [515, 5, 521, 10, 529, 19, 531, 21, 27, 28, 1054, 31, 1061, 39,
 
 COSTE SOLUCIÓN:  110580.0.
 
-DURACIÓN: 531 milisegundos.
+DURACIÓN: 675 milisegundos.
 

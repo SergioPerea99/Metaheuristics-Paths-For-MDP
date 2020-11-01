@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [1024, 4, 1544, 9, 12, 1548, 14, 17, 1555, 1044, 1558, 24, 1563
 
 COSTE SOLUCIÓN:  112197.0.
 
-DURACIÓN: 422 milisegundos.
+DURACIÓN: 506 milisegundos.
 
