@@ -47,6 +47,7 @@ public class Configurador {
                         //Añadimos todos los archivos al vector de archivos.
                         for (int i = 0; i < vArchivos.length; i++)
                             archivos.add(vArchivos[i]);
+                        
                         break;
                         
                     case "Algoritmos":

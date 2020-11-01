@@ -20,6 +20,10 @@ public class Random {
     public Random(){
         Seed = 0;
     }
+
+    Random(Long _semilla) {
+        Seed = _semilla;
+    }
     
     /* Inicializa la semilla al valor 'x'.
     Solo debe llamarse a esta funcion una vez en todo el programa */

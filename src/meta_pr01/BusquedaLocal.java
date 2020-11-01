@@ -18,12 +18,12 @@ public class BusquedaLocal extends Algoritmo{
     /**
      * @brief Constructor parametrizado.
      * @param args
-     * @param num_archivo
+     * @param archivo
      * @param sem 
      */
-    public BusquedaLocal(String[] args, Integer num_archivo,int sem){
+    public BusquedaLocal(String[] args, ArchivoDatos archivo,Integer sem){
         
-        super(args,num_archivo);
+        super(args,archivo);
         
         //Generamos la primera solución candidata de partida a partir de un aleatorio.
         int i = 0, punto;
@@ -87,7 +87,7 @@ public class BusquedaLocal extends Algoritmo{
                     }
                 }
             }
-            System.out.println("ITERACIONES: "+it+" de "+getConfig().getMax_Iteraciones()+" :: "+costeTotal);
+            //System.out.println("ITERACIONES: "+it+" de "+getConfig().getMax_Iteraciones()+" :: "+costeTotal);
             
         }  
     }

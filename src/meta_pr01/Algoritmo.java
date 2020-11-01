@@ -29,13 +29,13 @@ public abstract class Algoritmo {
     
     
     /**
-     * @brief Constructor parametrizado.
+     * @brief Constructor parametrizado
      * @param _args
-     * @param num_archivo 
+     * @param _archivo 
      */
-    public Algoritmo(String[] _args,Integer num_archivo){
+    public Algoritmo(String[] _args,ArchivoDatos _archivo){
         config = new Configurador(_args[0]);
-        archivo = new ArchivoDatos(getConfig().getArchivos().get(num_archivo));
+        archivo = _archivo;
         num_elementos = archivo.getTamMatriz();
         num_candidatos = archivo.getTamSolucion();
         random = new Random();

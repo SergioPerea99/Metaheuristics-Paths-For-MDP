@@ -22,7 +22,7 @@ public class ArchivoDatos {
        
         String linea;
         FileReader f = null;
-        
+        nombre = ruta_archivo;
         try{
             f = new FileReader(ruta_archivo);
             BufferedReader b = new BufferedReader(f);
@@ -64,6 +64,8 @@ public class ArchivoDatos {
     public String getNombre() {
         return nombre;
     }
+    
+    
 
     /**
      * @return the matrizDatos
@@ -84,6 +86,13 @@ public class ArchivoDatos {
      */
     public int getTamSolucion() {
         return tamSolucion;
+    }
+
+    /**
+     * @param nombre the nombre to set
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
     
     

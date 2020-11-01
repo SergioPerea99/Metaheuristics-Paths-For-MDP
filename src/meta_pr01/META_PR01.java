@@ -5,95 +5,106 @@
  */
 package meta_pr01;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 
 /**
  *
  * @author spdlc
  */
 public class META_PR01 {
-
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        InputStreamReader isr = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader (isr);
         
-        try{
-            int i;
-            do{
-                System.out.println("---------------------------------------------------");
-                System.out.println("---------------------------------------------------");
-                System.out.println("Si quiere terminar de ejecutar algoritmos escriba -1.");
-                
-                
-                System.out.print("FICHERO DE DATOS QUE QUIERE EJECUTAR ([0,8] vector de datos): ");
-                i = Integer.parseInt (br.readLine());
-                
-                if(i == -1)
-                    break;
-                
-                System.out.print("Escribe el algoritmo a querer usar (en minuscula): ");
-                String eleccion = br.readLine();
-
-                System.out.print("Escribe la semilla a querer usar([0,nº_Semillas - 1]): ");
-                int sem = Integer.parseInt (br.readLine());
-                long ms;
-                Date inicio, fin;
-                switch(eleccion){
-
-                    /*----- <ALGORITMO GREEDY -----*/
-                    case "greedy":
-                        
-                        Greedy greedy = new Greedy(args,i,sem);
-                        inicio = new Date();
-                        greedy.algoritmoGreedy();
-                        fin = new Date();
-                        ms = fin.getTime()-inicio.getTime();
-                        System.out.println(greedy.getM());
-                        ArrayList<Integer> v_M = new ArrayList<>(greedy.getM());
-                        System.out.println(greedy.costeSolucion(v_M));
-                        System.out.println(ms+" milisegundos.");
-                        break;
-
-                    case "busqueda local":
-                        
-                        BusquedaLocal b_local = new BusquedaLocal(args, i,sem);
-                        inicio = new Date();
-                        b_local.algBusquedaLocal();
-                        fin = new Date();
-                        ms = fin.getTime()-inicio.getTime();
-                        System.out.println(b_local.getM());
-                        System.out.println(b_local.getCoste());
-                        System.out.println(ms+" milisegundos.");
-                        break;
-
-                    case "busqueda tabu":
-                        BusquedaTabu b_tabu = new BusquedaTabu(args, i, sem);
-                        inicio = new Date();
-                        b_tabu.algBusquedaTabu();
-                        fin = new Date();
-                        ms = fin.getTime()-inicio.getTime();
-                        System.out.println("");
-                        System.out.println(b_tabu.getM());
-                        System.out.println("COSTE SOLUCIÓN -> "+b_tabu.getCoste());
-                        System.out.println(ms+" milisegundos.");
-                        break;
-                    
-                    default:
-                        break;
+        Configurador config = new Configurador(args[0]);
+        System.out.println(config.getArchivos());
+        ArrayList<ArchivoDatos> archivos = new ArrayList<>();
+        for (int i = 0; i < config.getArchivos().size(); i++) {
+            archivos.add(new ArchivoDatos(config.getArchivos().get(i)));
+        }
+        
+        
+        ExecutorService ejecutor = Executors.newCachedThreadPool();
+        
+        for(int i = 0; i < config.getAlgoritmos().size(); i++){
+            for(int j = 0; j < archivos.size(); j++){
+                try {
+                    CountDownLatch cdl = new CountDownLatch(config.getSemillas().size());
+                    ArrayList<SalidaDatos> m = new ArrayList<>();
+                    switch(config.getAlgoritmos().get(i)){
+                        case "Greedy":
+                            for(int k = 0; k < config.getSemillas().size(); k++){
+                                SalidaDatos salida = new SalidaDatos(args, archivos.get(j),config.getAlgoritmos().get(i), cdl, 0);
+                                m.add(salida);
+                                ejecutor.execute(salida);
+                            }
+                            cdl.await();
+                            guardaArchivo("log/"+config.getAlgoritmos().get(i)+"_"+archivos.get(j).getNombre()+"_"+config.getSemillas().get(0)+".txt",m.get(0).getLog());
+                            
+                            break;
+                        case "Busqueda_Local":
+                            for(int k = 0; k < config.getSemillas().size(); k++){
+                                SalidaDatos salida = new SalidaDatos(args, archivos.get(j),config.getAlgoritmos().get(i), cdl, k);
+                                m.add(salida);
+                                ejecutor.execute(salida);
+                            }
+                            cdl.await();
+                            for(int k = 0; k < m.size(); k++){
+                                guardaArchivo("log/"+config.getAlgoritmos().get(i)+"_"+archivos.get(j).getNombre()+"_"+config.getSemillas().get(k)+".txt",m.get(k).getLog());
+                            }
+                            break;
+                        case "Busqueda_Tabu":
+                            
+                            for(int k = 0; k < config.getSemillas().size(); k++){
+                                SalidaDatos salida = new SalidaDatos(args, archivos.get(j),config.getAlgoritmos().get(i), cdl, k);
+                                m.add(salida);
+                                ejecutor.execute(salida);
+                            }
+                            cdl.await();
+                            for(int k = 0; k < m.size(); k++){
+                                guardaArchivo("log/"+config.getAlgoritmos().get(i)+"_"+archivos.get(j).getNombre()+"_"+config.getSemillas().get(k)+".txt",m.get(k).getLog());
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(META_PR01.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                System.out.println("");
-            }while(i != -1);
-            
-        }catch(Exception e){
-            System.err.println("DEBES INTRODUCIR UN VALOR VALIDO.");
-        };
                 
+            }
+        }
+    }
+    
+    public static void guardaArchivo(String ruta,String texto){
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try{
+            fichero = new FileWriter(ruta);
+            pw = new PrintWriter(fichero);
+            
+            pw.print(texto);
+            
+        }catch(IOException e1){
+        } finally {
+            try{
+                if(fichero != null)
+                    fichero.close();
+            }catch(IOException e2){
+            }
+        }
     }
     
 }

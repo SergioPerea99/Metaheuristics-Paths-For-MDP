@@ -25,14 +25,15 @@ public class BusquedaTabu extends Algoritmo{
     private final HashSet<Integer> solucion_actual;
 
     /**
+     * 
      * @brief Constructor parametrizado.
+     * @param archivo
      * @param args
-     * @param num_archivo
      * @param sem 
      */
-    public BusquedaTabu(String[] args, Integer num_archivo,int sem){
+    public BusquedaTabu(String[] args, ArchivoDatos archivo,Integer sem){
         
-        super(args,num_archivo);
+        super(args,archivo);
         
         /*Generamos la primera solución candidata de partida a partir de un aleatorio.*/
         int i = 0, punto;
@@ -156,7 +157,7 @@ public class BusquedaTabu extends Algoritmo{
             }else
                 ++reinicio;
             
-            System.out.println("ITER "+it+" ("+getConfig().getMax_Iteraciones()+") :: "+vecindario+" vecinos :: Nº intentos "+reinicio+" :: Coste actual -> "+coste_actual+"("+costeTotal+" con "+M.size()+" elementos).");
+            //System.out.println("ITER "+it+" ("+getConfig().getMax_Iteraciones()+") :: "+vecindario+" vecinos :: Nº intentos "+reinicio+" :: Coste actual -> "+coste_actual+"("+costeTotal+" con "+M.size()+" elementos).");
             it++;
             
             
@@ -230,17 +231,17 @@ public class BusquedaTabu extends Algoritmo{
         if(aleatorio < getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR()){ /*DIVERSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)
                 solucion_actual.add(mem_largo_plazo.get(i++).getKey());
-            System.out.print("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> "+getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR());
+            //System.out.print("DIVERSIFICACIÓN (SOLUCION ACTUAL) --> "+getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR());
             //getConfig().setPROB_INTENSIFICAR_DIVERSIFICAR(getConfig().getPROB_INTENSIFICAR_DIVERSIFICAR() - 0.01);
         }else{ /*INTENSIFICARÁ.*/
             while (solucion_actual.size() < num_candidatos)    
                 solucion_actual.add(mem_largo_plazo.get(j--).getKey());
-            System.out.print("INTENSIFICACIÓN (SOLUCION ACTUAL)");
+            //System.out.print("INTENSIFICACIÓN (SOLUCION ACTUAL)");
         }
         
         ArrayList<Integer> aux = new ArrayList<>(solucion_actual);
         coste_actual = costeSolucion(aux); //OPERACION DEL NUEVO COSTE DE LA SOLUCION ACTUAL.
-        System.out.println(" :: coste actual --> "+coste_actual);
+        //System.out.println(" :: coste actual --> "+coste_actual);
         aux.sort((o1,o2) -> o1.compareTo(o2));
         
     } 

@@ -5,9 +5,6 @@
  */
 package meta_pr01;
 
-import java.util.HashSet;
-
-
 /**
  *
  * @author spdlc
@@ -21,9 +18,11 @@ public class Greedy extends Algoritmo{
      * @post Creamos el greedy a partir de la superclase algoritmo que nos proporciona todos los datos
      * de los archivos necesarios: matriz de datos, hashSet de solución candidata, numero de candidatos...
      * @param args Parametro necesario para la posible lectura en la clase abstracta de los datos.
+     * @param archivo
+     * @param sem
      */
-    public Greedy(String[] args, Integer num_archivo,Integer sem){
-        super(args,num_archivo);
+    public Greedy(String[] args, ArchivoDatos archivo,Integer sem){
+        super(args, archivo);
         //Generamos el primer punto aleatorio a partir de la semilla y lo añadimos al hashSet solución.
         Random random = new Random();
         random.Set_random(getConfig().getSemillas().get(sem));
