@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [65, 1, 194, 324, 196, 261, 70, 390, 10, 267, 396, 140, 398, 17
 
 COSTE SOLUCIÓN:  4527.0.
 
-DURACIÓN: 51 milisegundos.
+DURACIÓN: 30 milisegundos.
 

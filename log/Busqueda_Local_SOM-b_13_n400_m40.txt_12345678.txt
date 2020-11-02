@@ -4,5 +4,5 @@ SOLUCIÓN FINAL: [320, 192, 386, 322, 3, 265, 201, 139, 268, 206, 14, 78, 336, 8
 
 COSTE SOLUCIÓN:  4540.0.
 
-DURACIÓN: 60 milisegundos.
+DURACIÓN: 27 milisegundos.
 

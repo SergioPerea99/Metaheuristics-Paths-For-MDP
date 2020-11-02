@@ -146,7 +146,7 @@ public class BusquedaTabu extends Algoritmo{
                 ++reinicio;
             
             //System.out.println("ITER "+it+" ("+getConfig().getMax_Iteraciones()+") :: "+vecindario+" vecinos :: Nº intentos "+reinicio+" :: Coste actual -> "+coste_actual+"("+costeTotal+" con "+M.size()+" elementos).");
-            it++;
+            
             
             
             if(reinicio >= getConfig().getINTENTOS_REINICIO()){ /*EN CASO DE GENERAR SOLUCIÓN ACTUAL TOTALMENTE NUEVA.*/
@@ -155,7 +155,7 @@ public class BusquedaTabu extends Algoritmo{
                 solucionPorFrecuencias(); //GENERA UNA SOLUCION ACTUAL COMPLETAMENTE NUEVA A PARTIR DE LA MEMORIA A LARGO PLAZO.
                 limpiarMemorias(); //REINICIO DE LAS MEMORIAS.
                 vecindario = entorno; //REINICIO DE NUEVO LOS VECINOS A GENERAR A PARTIR DE UNA SOLUCIÓN.
-                
+                it++;
                 if(costeTotal < coste_actual){ /*¿SOLUCIÓN ACTUAL ES MEJOR A LA MEJOR SOLUCIÓN QUE HABÍAMOS ENCONTRADO DESDE EL INICIO?*/
                     
                     M.clear();
