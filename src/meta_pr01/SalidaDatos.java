@@ -36,12 +36,15 @@ public class SalidaDatos implements Runnable {
     public void run() { //Método principal de cada hilo.
         long tiempoInicial, tiempoFinal;
         System.out.println("Archivo "+archivo.getNombre()+" :: Algoritmo "+algoritmo+" :: Nº_semilla = "+semilla);
+        ArrayList<Integer> v_M;
         switch(algoritmo){
             
             case "Greedy":
                 //Inicialización aleatoria de la primera solución.
                 Greedy greedy = new Greedy(args, archivo, 0);
                 log.append("ALGORITMO GREEDY :: ARCHIVO "+archivo.getNombre()+" :: Nº_SEMILLA = "+0+".\n\n");
+                v_M = new ArrayList<>(greedy.getM());
+                log.append("ELEMENTO INICIAL DE PARTIDA:\n"+greedy.getM()+"\nCOSTE INICIAL: "+greedy.costeSolucion(v_M)+"\n\n");
                 
                 //Ejecución de la metaheurística.
                 tiempoInicial = System.currentTimeMillis();
@@ -50,7 +53,7 @@ public class SalidaDatos implements Runnable {
                 
                 //Finalización de la metahuerística.
                 log.append("SOLUCIÓN FINAL: "+greedy.getM()+".\n\n");
-                ArrayList<Integer> v_M = new ArrayList<>(greedy.getM());
+                v_M = new ArrayList<>(greedy.getM());
                 log.append("COSTE SOLUCIÓN:  "+greedy.costeSolucion(v_M)+".\n\n");
                 log.append("DURACIÓN: " + (tiempoFinal - tiempoInicial) + " milisegundos.\n\n");
                 cdl.countDown(); //Para asegurar la finalización del hilo.
@@ -60,6 +63,8 @@ public class SalidaDatos implements Runnable {
                 //Inicialización aleatoria de la primera solución.
                 BusquedaLocal b_local = new BusquedaLocal(args, archivo, semilla);
                 log.append("BUSQUEDA LOCAL :: ARCHIVO "+archivo.getNombre()+" :: Nº_SEMILLA = "+semilla+".\n\n");
+                v_M = new ArrayList<>(b_local.getM());
+                log.append("SOLUCIÓN INICIAL DE PARTIDA:\n"+b_local.getM()+"\nCOSTE INICIAL: "+b_local.costeSolucion(v_M)+"\n\n");
                 
                 //Ejecución de la metaheurística.
                 tiempoInicial = System.currentTimeMillis();
@@ -76,7 +81,8 @@ public class SalidaDatos implements Runnable {
             case "Busqueda_Tabu":
                 BusquedaTabu b_tabu = new BusquedaTabu(args, archivo, semilla);
                 log.append("BUSQUEDA TABÚ :: ARCHIVO "+archivo.getNombre()+" :: Nº_SEMILLA = "+semilla+".\n\n");
-                
+                v_M = new ArrayList<>(b_tabu.getM());
+                log.append("SOLUCIÓN INICIAL DE PARTIDA:\n"+b_tabu.getM()+"\nCOSTE INICIAL: "+b_tabu.costeSolucion(v_M)+"\n\n");
                 //Ejecución de la metaheurística.
                 tiempoInicial = System.currentTimeMillis();
                 b_tabu.algBusquedaTabu();
